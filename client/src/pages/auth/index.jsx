@@ -68,7 +68,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button
-                  className="w-full rounded-full p-6"
+                  className="mt-4 w-full rounded-full p-6"
                   onClick={() => handleLogin()}
                 >
                   Login
@@ -100,7 +100,7 @@ const Auth = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <Button
-                  className="w-full rounded-full p-6"
+                  className="mt-4 w-full rounded-full p-6"
                   onClick={() => handleSignup()}
                 >
                   Signup
