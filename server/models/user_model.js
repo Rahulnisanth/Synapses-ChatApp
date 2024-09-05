@@ -6,6 +6,7 @@ const user_schema = new mongoose.Schema({
     type: String,
     required: [true, "Email is required"],
     unique: true,
+    match: [/.+@.+\..+/, "Please enter a valid email address"],
   },
   password: {
     type: String,
@@ -14,27 +15,33 @@ const user_schema = new mongoose.Schema({
   first_name: {
     type: String,
     required: false,
+    default: "",
   },
   last_name: {
     type: String,
     required: false,
+    default: "",
   },
   image: {
     type: String,
     required: false,
+    default: "",
   },
   profile_setup: {
     type: Boolean,
     required: false,
+    default: false,
   },
 });
 
+// Pre-save hook to hash password
 user_schema.pre("save", async function (next_func) {
-  const salt = await genSalt();
-  this.password = await hash(this.password, salt);
-  // Getting the function as the parameter and invoking the save schema after the password is hashed...
+  if (this.isModified("password")) {
+    const salt = await genSalt();
+    this.password = await hash(this.password, salt);
+  }
   next_func();
 });
 
-const User = mongoose.model("users", user_schema);
-export default User;
+// Create and export the User model
+export const User = mongoose.model("User", user_schema);
