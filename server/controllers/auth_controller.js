@@ -2,7 +2,7 @@ import { compare } from "bcrypt";
 import { User } from "../models/user_model.js";
 import jwt from "jsonwebtoken";
 
-const max_timer = 3 * 24 * 60 * 60;
+const max_timer = 3 * 24 * 1000 * 1000;
 
 const createToken = (email, user_id) => {
   return jwt.sign({ email, user_id }, process.env.JWT_KEY, {
@@ -21,9 +21,8 @@ export const signup = async (request, response) => {
 
     response.cookie("jwt", createToken(email, user._id), {
       maxAge: max_timer * 1000,
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: "None",
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: "Lax",
     });
 
     return response.status(201).json({
@@ -55,8 +54,7 @@ export const login = async (request, response) => {
     response.cookie("jwt", createToken(email, user._id), {
       maxAge: max_timer * 1000,
       secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: "None",
+      sameSite: "Lax",
     });
 
     return response.status(200).json({

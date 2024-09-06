@@ -31,13 +31,11 @@ function App() {
         const response = await api_client.get(USER_INFO_ROUTE, {
           withCredentials: true,
         });
-
         if (response.status === 200 && response.data) {
           setUserInfo(response.data);
         } else {
           setUserInfo(undefined);
         }
-        console.log("User data fetched using get user API =>", response.data);
       } catch (err) {
         console.error("Error fetching user info:", err);
         setUserInfo(undefined);
