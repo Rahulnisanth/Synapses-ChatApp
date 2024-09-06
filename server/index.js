@@ -8,7 +8,7 @@ import auth_route from "./routes/auth_routes.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
-const database_url = process.env.database_url;
+const database_url = process.env.DATABASE_URL;
 
 app.use(
   cors({
@@ -24,14 +24,14 @@ app.options("*", cors());
 app.use(cookieParser());
 app.use(express.json());
 
-// overall authentications router...
+// Auth routes
 app.use("/api/auth", auth_route);
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}/`);
 });
 
 mongoose
   .connect(database_url)
   .then(() => console.log("Database connection successful!"))
-  .catch((err) => console.log("Database connection error: ", err));
+  .catch((err) => console.error("Database connection error:", err));
