@@ -21,7 +21,7 @@ export const signup = async (request, response) => {
 
     response.cookie("jwt", createToken(email, user._id), {
       maxAge: max_timer * 1000,
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
     });
 
@@ -91,6 +91,43 @@ export const getUserInfo = async (request, response) => {
     });
   } catch (err) {
     console.error("Error occurred during getUserInfo", err);
+    return response.status(500).send("Internal server error!");
+  }
+};
+
+// Update User Info :
+export const updateUserInfo = async (request, response) => {
+  try {
+    const { user_id } = request;
+    const { first_name, last_name } = request.body;
+    if (!user_id) {
+      return response.status(400).send("User ID is required.");
+    }
+    if (!first_name || !last_name) {
+      return response
+        .status(400)
+        .send("First name and Last name are required.");
+    }
+
+    const userData = await User.findByIdAndUpdate(
+      user_id,
+      { first_name, last_name, profile_setup: true },
+      { new: true, runValidators: true }
+    );
+    if (!userData) {
+      return response.status(404).send("User not found.");
+    }
+
+    return response.status(200).json({
+      id: userData._id,
+      email: userData.email,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      image: userData.image,
+      profile_setup: userData.profile_setup,
+    });
+  } catch (err) {
+    console.error("Error occurred during updateUserInfo function", err);
     return response.status(500).send("Internal server error!");
   }
 };

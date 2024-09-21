@@ -54,6 +54,8 @@ function App() {
   if (loading) {
     return <div>Loading...</div>;
   }
+  console.log("5" + 6);
+  console.log("5" - 10);
 
   return (
     <BrowserRouter>
