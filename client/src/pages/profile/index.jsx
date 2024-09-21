@@ -1,19 +1,21 @@
 import { useAppStore } from "@/store";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // UIs :
-import {
-  UPDATE_USER_INFO_ROUTE,
-  ADD_PROFILE_IMAGE_ROUTE,
-} from "@/utils/constants";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { FaTrash, FaPlus } from "react-icons/fa";
-import { TbArrowBackUpDouble } from "react-icons/tb";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 // Server components :
 import { api_client } from "@/lib/api-client";
+import {
+  UPDATE_USER_INFO_ROUTE,
+  ADD_PROFILE_IMAGE_ROUTE,
+  HOST,
+  DELETE_PROFILE_IMAGE_ROUTE,
+} from "@/utils/constants";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -90,24 +92,46 @@ const Profile = () => {
     }
   };
 
-  const handleImageDelete = () => {
-    setImage(null);
+  const handleImageDelete = async () => {
+    try {
+      const response = await api_client.delete(DELETE_PROFILE_IMAGE_ROUTE, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setUserInfo({ ...userInfo, image: null });
+        toast.success("Profile image deleted successfully.");
+        setImage(null);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
+
+  useEffect(() => {
+    if (userInfo.image) {
+      setImage(`${HOST}/${userInfo.image}`);
+    }
+  }, [userInfo]);
 
   return (
     <div className="bg-[#1b1c24] h-[100vh] flex flex-col justify-center items-center gap-10">
       <div className="flex flex-col gap-10 w-[80vw] md:w-max">
         <div>
-          <TbArrowBackUpDouble
+          <IoArrowBackCircleOutline
             onClick={handleNavigate}
             className="text-4xl lg:text-6xl text-white/90 cursor-pointer"
           />
         </div>
         <div className="grid grid-cols-2 justify-center items-center">
           <div className="h-32 w-32 md:w-48 md:h-48 relative flex items-center justify-center cursor-pointer">
-            <Avatar className="h-32 w-32 md:h-48 md:w-48 rounded-full cursor-pointer overflow-hidden">
+            <Avatar className="h-32 w-32 md:h-48 md:w-48 rounded-full overflow-hidden">
               {image ? (
-                <AvatarImage src={image} />
+                <img
+                  src={image}
+                  className="object-cover h-full w-full rounded-full"
+                  onMouseEnter={() => setHovered(true)}
+                  onMouseLeave={() => setHovered(false)}
+                />
               ) : (
                 <div
                   className="uppercase text-5xl font-bold h-38 w-32 md:h-48 md:w-48 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer"
@@ -122,8 +146,8 @@ const Profile = () => {
             </Avatar>
             {hovered && (
               <div
-                onClick={image ? handleImageDelete : handleFileInputClick}
                 className="absolute inset-0 flex bg-black/50 border-[1px] border-white justify-center items-center rounded-full cursor-pointer"
+                onClick={image ? handleImageDelete : handleFileInputClick}
               >
                 {image ? (
                   <FaTrash className="text-white text-3xl" />

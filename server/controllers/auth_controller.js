@@ -2,8 +2,6 @@ import { compare } from "bcrypt";
 import { User } from "../models/user_model.js";
 import jwt from "jsonwebtoken";
 import { renameSync, unlinkSync } from "fs";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
 
 const max_timer = 3 * 24 * 1000 * 1000;
 
@@ -139,26 +137,14 @@ export const updateUserInfo = async (request, response) => {
 };
 
 // Add Profile Image :
-// Derive __dirname in ES module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-// Add Profile Image:
 export const addProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
     const date = Date.now().toString();
-    // Construct the path to the profiles directory
-    const fileName = join(
-      __dirname,
-      "..",
-      "uploads",
-      "profiles",
-      `${date}-${request.file.originalname}`
-    );
-    // Log the temporary file path
-    console.log("Temporary file path:", request.file.path);
-    // Rename the uploaded file
+
+    let fileName = "uploads/profiles/" + date + request.file.originalname;
     renameSync(request.file.path, fileName);
+
     const updatedUserData = await User.findByIdAndUpdate(
       user_id,
       { image: fileName },
@@ -177,7 +163,14 @@ export const addProfileImage = async (request, response) => {
 export const deleteProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
-    console.log(user_id);
+    const user = await User.findById(user_id);
+    if (!user) {
+      return response.status(404).send("User not found");
+    }
+    unlinkSync(user.image);
+    user.image = null;
+    user.save();
+    return response.status(200).send("Profile image deleted successfully.");
   } catch (err) {
     console.error("Error occurred during updateUserInfo function", err);
     return response.status(500).send("Internal server error!");

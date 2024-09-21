@@ -20,6 +20,8 @@ app.use(
 
 // Handle preflight requests
 app.options("*", cors());
+app.use("/uploads/profiles", express.static("uploads/profiles"));
+
 app.use(cookieParser());
 app.use(express.json());
 
@@ -27,7 +29,6 @@ app.use(express.json());
 app.use("/api/auth", auth_route);
 
 // Uploads directory
-app.use("/uploads/profiles", express.static("/uploads/profiles"));
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}/`);
