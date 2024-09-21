@@ -73,35 +73,35 @@ const Auth = () => {
   };
 
   return (
-    <div className="h-[90vh] flex justify-center items-center">
-      <div className="h-[80vh] bg-white border-2 border-white text-opacity-90 shadow-2xl w-[80vw] md:w-[90vw] lg:w-[70vw] xl:w-[60vw] rounded-3xl grid xl:grid-cols-2">
+    <div className="min-h-screen bg-[#1b1c24] flex justify-center items-center">
+      <div className="min-h-[80vh] bg-[#1b1c24] border-2 border-[#1b1c24] text-white/90 shadow-2xl w-[90vw] lg:w-[70vw] xl:w-[60vw] rounded-3xl grid xl:grid-cols-2">
         <div className="flex flex-col items-center justify-center p-4">
           <div className="flex flex-col items-center justify-center md:ml-4">
             <div className="flex items-center justify-center">
-              <h1 className="text-4xl ml-4 font-bold sm:text-4xl md:text-5xl lg:text-6xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold ml-4">
                 Welcome
               </h1>
               <img
                 src={Emoji}
                 alt="Emoji"
-                className="w-24 h-24 md:w-32 md:h-32"
+                className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32"
               />
             </div>
             <p className="font-medium text-center">
-              Fill in the details to get started with the best chat app!
+              Fill in the details to get started with Synapse-X
             </p>
           </div>
           <div className="flex items-center justify-center w-full mt-10">
-            <Tabs defaultValue="login" className="w-3/4">
+            <Tabs defaultValue="login" className="w-full md:w-3/4">
               <TabsList className="w-full bg-transparent rounded-none">
                 <TabsTrigger
-                  className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 duration-300 transition-all"
+                  className="data-[state=active]:bg-transparent text-white/90 text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 duration-300 transition-all"
                   value="login"
                 >
                   Login
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 duration-300 transition-all"
+                  className="data-[state=active]:bg-transparent text-white/90 text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 duration-300 transition-all"
                   value="signup"
                 >
                   Signup
@@ -112,21 +112,21 @@ const Auth = () => {
                 value="login"
               >
                 <Input
-                  className="rounded-full p-6"
+                  className="rounded-lg text-white p-4 sm:p-6 bg-[#2c2e3b] border-none"
                   type="email"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <Input
-                  className="rounded-full p-6"
+                  className="rounded-lg text-white p-4 sm:p-6 bg-[#2c2e3b] border-none"
                   type="password"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button
-                  className="mt-4 w-full rounded-full p-6"
+                  className="mt-4 w-full rounded-lg p-4 sm:p-6 text-white bg-purple-700 hover:bg-purple-900 transition-all duration-300"
                   onClick={() => handle_login()}
                 >
                   Login
@@ -137,28 +137,28 @@ const Auth = () => {
                 value="signup"
               >
                 <Input
-                  className="rounded-full p-6"
+                  className="rounded-lg text-white p-4 sm:p-6 bg-[#2c2e3b] border-none"
                   type="email"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <Input
-                  className="rounded-full p-6"
+                  className="rounded-lg text-white p-4 sm:p-6 bg-[#2c2e3b] border-none"
                   type="password"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <Input
-                  className="rounded-full p-6"
+                  className="rounded-lg text-white p-4 sm:p-6 bg-[#2c2e3b] border-none"
                   type="password"
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <Button
-                  className="mt-4 w-full rounded-full p-6"
+                  className="mt-4 w-full rounded-lg p-4 sm:p-6 text-white bg-purple-700 hover:bg-purple-900 transition-all duration-300"
                   onClick={() => handle_signup()}
                 >
                   Signup
@@ -170,7 +170,7 @@ const Auth = () => {
         <div className="hidden xl:flex items-center justify-center">
           <img
             src={Abstract}
-            className="h-[650px]"
+            className="h-[500px] md:h-[600px] xl:h-[650px] mix-blend-mode multiply"
             alt="Authentication Abstract"
           />
         </div>

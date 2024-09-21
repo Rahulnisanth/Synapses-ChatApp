@@ -2,9 +2,9 @@ import { useAppStore } from "@/store";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // UIs :
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { FaTrash, FaPlus } from "react-icons/fa";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { BsArrowUpLeftSquareFill } from "react-icons/bs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -117,7 +117,7 @@ const Profile = () => {
     <div className="bg-[#1b1c24] h-[100vh] flex flex-col justify-center items-center gap-10">
       <div className="flex flex-col gap-10 w-[80vw] md:w-max">
         <div>
-          <IoArrowBackCircleOutline
+          <BsArrowUpLeftSquareFill
             onClick={handleNavigate}
             className="text-4xl lg:text-6xl text-white/90 cursor-pointer"
           />
