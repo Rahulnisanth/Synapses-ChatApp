@@ -2,7 +2,7 @@
 
 Status: In progress
 
-Tags: Express, MongoDB, NodeJS, React
+Tags: Express, MongoDB, NodeJS, React and Socket-io.
 
 # Project Description:
 
