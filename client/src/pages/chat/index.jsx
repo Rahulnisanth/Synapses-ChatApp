@@ -15,6 +15,10 @@ const Chat = () => {
   return (
     <div>
       <h1>This is the chat page!</h1>
+      <p>{userInfo.first_name}</p>
+      <p>{userInfo.last_name}</p>
+      <p>{userInfo.image}</p>
+      <p>{userInfo.profile_setup}</p>
     </div>
   );
 };

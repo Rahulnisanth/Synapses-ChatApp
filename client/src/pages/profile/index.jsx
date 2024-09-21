@@ -1,23 +1,36 @@
 import { useAppStore } from "@/store";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+// UIs :
+import {
+  UPDATE_USER_INFO_ROUTE,
+  ADD_PROFILE_IMAGE_ROUTE,
+} from "@/utils/constants";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { TbArrowBackUpDouble } from "react-icons/tb";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+// Server components :
 import { api_client } from "@/lib/api-client";
-import { UPDATE_USER_INFO_ROUTE } from "@/utils/constants";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
   const [firstName, setFirstName] = useState(userInfo.first_name || "");
   const [lastName, setLastName] = useState(userInfo.last_name || "");
-  // eslint-disable-next-line no-unused-vars
   const [image, setImage] = useState(null);
   const [hovered, setHovered] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleNavigate = () => {
+    if (userInfo.profile_setup) {
+      navigate("/chat");
+    } else {
+      toast.error("Please setup the profile to continue.");
+    }
+  };
 
   const validateProfile = () => {
     if (!firstName || !lastName) {
@@ -49,15 +62,50 @@ const Profile = () => {
     }
   };
 
+  const handleFileInputClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("profile-image", file);
+      const response = await api_client.post(
+        ADD_PROFILE_IMAGE_ROUTE,
+        formData,
+        { withCredentials: true }
+      );
+
+      if (response.status === 200 && response.data.image) {
+        setUserInfo({ ...userInfo, image: response.data.image });
+        toast.success("Profile image added successfully.");
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageDelete = () => {
+    setImage(null);
+  };
+
   return (
     <div className="bg-[#1b1c24] h-[100vh] flex flex-col justify-center items-center gap-10">
       <div className="flex flex-col gap-10 w-[80vw] md:w-max">
         <div>
-          <TbArrowBackUpDouble className="text-4xl lg:text-6xl text-white/90 cursor-pointer" />
+          <TbArrowBackUpDouble
+            onClick={handleNavigate}
+            className="text-4xl lg:text-6xl text-white/90 cursor-pointer"
+          />
         </div>
-        <div className="grid grid-cols-2">
-          <div className="h-full w-32 md:w-48 md:h-48 relative flex items-center justify-center cursor-pointer">
-            <Avatar className="h-38 w-32 md:h-48 md:w-48 rounded-full cursor-pointer overflow-hidden">
+        <div className="grid grid-cols-2 justify-center items-center">
+          <div className="h-32 w-32 md:w-48 md:h-48 relative flex items-center justify-center cursor-pointer">
+            <Avatar className="h-32 w-32 md:h-48 md:w-48 rounded-full cursor-pointer overflow-hidden">
               {image ? (
                 <AvatarImage src={image} />
               ) : (
@@ -73,14 +121,25 @@ const Profile = () => {
               )}
             </Avatar>
             {hovered && (
-              <div className="absolute inset-0 flex bg-black/50 border-[1px] border-white justify-center items-center rounded-full">
+              <div
+                onClick={image ? handleImageDelete : handleFileInputClick}
+                className="absolute inset-0 flex bg-black/50 border-[1px] border-white justify-center items-center rounded-full cursor-pointer"
+              >
                 {image ? (
-                  <FaTrash className="text-white text-3xl cursor-pointer" />
+                  <FaTrash className="text-white text-3xl" />
                 ) : (
-                  <FaPlus className="text-white text-3xl cursor-pointer" />
+                  <FaPlus className="text-white text-3xl" />
                 )}
               </div>
             )}
+            <input
+              type="file"
+              className="hidden"
+              onChange={handleImageChange}
+              ref={fileInputRef}
+              name="profile-image"
+              accept=".png,.jpg,.jpeg,.svg,.webp"
+            />
           </div>
           <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
             <div className="w-full">

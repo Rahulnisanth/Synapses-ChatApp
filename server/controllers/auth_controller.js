@@ -1,6 +1,9 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user_model.js";
 import jwt from "jsonwebtoken";
+import { renameSync, unlinkSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const max_timer = 3 * 24 * 1000 * 1000;
 
@@ -76,7 +79,7 @@ export const login = async (request, response) => {
 // Get User Info:
 export const getUserInfo = async (request, response) => {
   try {
-    const user_id = request._id;
+    const user_id = request.user_id;
     const userData = await User.findById(user_id);
 
     if (!userData) return response.status(404).send("User not found.");
@@ -98,20 +101,23 @@ export const getUserInfo = async (request, response) => {
 // Update User Info :
 export const updateUserInfo = async (request, response) => {
   try {
-    const { user_id } = request;
+    const user_id = request.user_id;
     const { first_name, last_name } = request.body;
+
     if (!user_id) {
       return response.status(400).send("User ID is required.");
     }
     if (!first_name || !last_name) {
-      return response
-        .status(400)
-        .send("First name and Last name are required.");
+      return response.status(400).send("FirstName and LastName are required.");
     }
 
     const userData = await User.findByIdAndUpdate(
       user_id,
-      { first_name, last_name, profile_setup: true },
+      {
+        first_name,
+        last_name,
+        profile_setup: true,
+      },
       { new: true, runValidators: true }
     );
     if (!userData) {
@@ -126,6 +132,52 @@ export const updateUserInfo = async (request, response) => {
       image: userData.image,
       profile_setup: userData.profile_setup,
     });
+  } catch (err) {
+    console.error("Error occurred during updateUserInfo function", err);
+    return response.status(500).send("Internal server error!");
+  }
+};
+
+// Add Profile Image :
+// Derive __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Add Profile Image:
+export const addProfileImage = async (request, response) => {
+  try {
+    const user_id = request.user_id;
+    const date = Date.now().toString();
+    // Construct the path to the profiles directory
+    const fileName = join(
+      __dirname,
+      "..",
+      "uploads",
+      "profiles",
+      `${date}-${request.file.originalname}`
+    );
+    // Log the temporary file path
+    console.log("Temporary file path:", request.file.path);
+    // Rename the uploaded file
+    renameSync(request.file.path, fileName);
+    const updatedUserData = await User.findByIdAndUpdate(
+      user_id,
+      { image: fileName },
+      { new: true, runValidators: true }
+    );
+    return response.status(200).json({
+      image: updatedUserData.image,
+    });
+  } catch (err) {
+    console.error("Error occurred during updateUserInfo function", err);
+    return response.status(500).send("Internal server error!");
+  }
+};
+
+// Delete Profile Image :
+export const deleteProfileImage = async (request, response) => {
+  try {
+    const user_id = request.user_id;
+    console.log(user_id);
   } catch (err) {
     console.error("Error occurred during updateUserInfo function", err);
     return response.status(500).send("Internal server error!");

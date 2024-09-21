@@ -9,3 +9,5 @@ export const LOGIN_ROUTE = `${AUTH_ROUTES}/login`;
 export const USER_INFO_ROUTE = `${AUTH_ROUTES}/user-info`;
 
 export const UPDATE_USER_INFO_ROUTE = `${AUTH_ROUTES}/update-profile`;
+
+export const ADD_PROFILE_IMAGE_ROUTE = `${AUTH_ROUTES}/add-profile-image`;
