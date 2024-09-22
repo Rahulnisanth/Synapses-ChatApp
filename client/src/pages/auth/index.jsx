@@ -1,5 +1,6 @@
 import Emoji from "@/assets/victory.svg";
 import Abstract from "@/assets/login2.png";
+import animationSource from "@/assets/lottie_animation.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,8 @@ import { api_client } from "@/lib/api-client";
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from "@/utils/constants";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store";
+// Lottie :
+import { Player } from "@lottiefiles/react-lottie-player";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -74,7 +77,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-[#1b1c24] flex justify-center items-center">
-      <div className="min-h-[80vh] bg-[#1b1c24] border-2 border-[#1b1c24] text-white/90 shadow-2xl w-[90vw] lg:w-[70vw] xl:w-[60vw] rounded-3xl grid xl:grid-cols-2">
+      <div className="min-h-[80vh] bg-[#1b1c24] border-2 border-[#1b1c24] text-white/90 md:shadow-2xl w-[90vw] lg:w-[70vw] xl:w-[60vw] rounded-3xl flex flex-col-reverse xl:flex-row">
         <div className="flex flex-col items-center justify-center p-4">
           <div className="flex flex-col items-center justify-center md:ml-4">
             <div className="flex items-center justify-center">
@@ -91,22 +94,26 @@ const Auth = () => {
               Fill in the details to get started with Synapse-X
             </p>
           </div>
+
+          {/* Tabs for Login and Signup */}
           <div className="flex items-center justify-center w-full mt-10">
             <Tabs defaultValue="login" className="w-full md:w-3/4">
               <TabsList className="w-full bg-transparent rounded-none">
                 <TabsTrigger
-                  className="data-[state=active]:bg-transparent text-white/90 text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 duration-300 transition-all"
+                  className="data-[state=active]:bg-transparent text-white/90 border-b-2 rounded-none w-full data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 transition-all duration-300"
                   value="login"
                 >
                   Login
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-transparent text-white/90 text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 duration-300 transition-all"
+                  className="data-[state=active]:bg-transparent text-white/90 border-b-2 rounded-none w-full data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-purple-500 p-3 transition-all duration-300"
                   value="signup"
                 >
                   Signup
                 </TabsTrigger>
               </TabsList>
+
+              {/* Login Tab Content */}
               <TabsContent
                 className="flex flex-col items-center justify-center gap-5 mt-10"
                 value="login"
@@ -132,6 +139,8 @@ const Auth = () => {
                   Login
                 </Button>
               </TabsContent>
+
+              {/* Signup Tab Content */}
               <TabsContent
                 className="flex flex-col items-center justify-center gap-5"
                 value="signup"
@@ -167,6 +176,8 @@ const Auth = () => {
             </Tabs>
           </div>
         </div>
+
+        {/* Image on Larger Screens */}
         <div className="hidden xl:flex items-center justify-center">
           <img
             src={Abstract}
@@ -174,6 +185,14 @@ const Auth = () => {
             alt="Authentication Abstract"
           />
         </div>
+
+        {/* Animation on Small Screens */}
+        <Player
+          src={animationSource}
+          className="player block p-3 sm:order-1 h-[300px] md:hidden"
+          loop
+          autoplay
+        />
       </div>
     </div>
   );
