@@ -1,4 +1,4 @@
-# Synapsex Chat App - v1
+# Synapses Chat App - v1
 
 Status: In progress
 
@@ -6,7 +6,7 @@ Tags: Express, MongoDB, NodeJS, React and Socket-io.
 
 # Project Description:
 
-**Synapsex** is a fully responsive chat application built using the MERN stack. Designed to offer seamless real-time communication, the application leverages React for the frontend with ShadCN UI components and Tailwind CSS for a sleek, modern design. Authentication is managed through JWT tokens, ensuring secure user access.
+**Synapses** is a fully responsive chat application built using the MERN stack. Designed to offer seamless real-time communication, the application leverages React for the frontend with ShadCN UI components and Tailwind CSS for a sleek, modern design. Authentication is managed through JWT tokens, ensuring secure user access.
 
 ## **Tech Stack:**
 

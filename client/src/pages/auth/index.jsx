@@ -91,7 +91,7 @@ const Auth = () => {
               />
             </div>
             <p className="font-medium text-center">
-              Fill in the details to get started with Synapsex
+              Fill in the details to get started with Synapses
             </p>
           </div>
 

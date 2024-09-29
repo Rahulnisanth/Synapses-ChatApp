@@ -1,10 +1,10 @@
 import { useAppStore } from "@/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ChatContainer from "./components/chat-container";
 import ContactsContainer from "./components/contacts-container";
-// import EmptyChatContainer from "./components/empty-chat-container";
+import EmptyChatContainer from "./components/empty-chat-container";
 
 const Chat = () => {
   const { userInfo } = useAppStore();

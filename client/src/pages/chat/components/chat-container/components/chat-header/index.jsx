@@ -7,7 +7,7 @@ const ChatHeader = () => {
       {/* Channel/Message Name */}
       <div>
         <p className="text-2xl md:text-3xl font-light tracking-wider text-neutral-300">
-          Name of the channel or message
+          Name of the channel
         </p>
       </div>
 
