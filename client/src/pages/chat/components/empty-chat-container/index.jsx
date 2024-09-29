@@ -14,7 +14,7 @@ const EmptyChatContainer = () => {
       <div className="text-center text-opacity-80 text-white flex flex-col gap-5 items-center mt-10 lg:text-4xl text-3xl transition-all duration-300">
         <h3 className="font-bold">
           <span>👋</span> Welcome to
-          <span className="text-purple-500"> SynapseX</span> Chat App.
+          <span className="text-purple-500"> Synapsex</span> Chat App.
         </h3>
       </div>
     </div>

@@ -26,7 +26,7 @@ const Logo = () => {
           fill="#a16ee8"
         ></path>{" "}
       </svg>
-      <span className="text-3xl font-semibold ">SynapseX</span>
+      <span className="text-3xl font-semibold ">Synapsex</span>
     </div>
   );
 };
