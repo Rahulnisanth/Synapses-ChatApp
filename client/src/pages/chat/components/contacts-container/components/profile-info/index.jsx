@@ -62,7 +62,7 @@ const ProfileInfo = () => {
             <TooltipTrigger>
               <RiEdit2Fill
                 onClick={() => navigate(`/profile`)}
-                className="text-green-500 text-2xl"
+                className="text-purple-500 text-2xl"
               />
             </TooltipTrigger>
             <TooltipContent className="bg-[#1c1b1e] border-none text-white">
