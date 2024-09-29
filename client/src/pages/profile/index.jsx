@@ -134,20 +134,24 @@ const Profile = () => {
                 />
               ) : (
                 <div
-                  className="uppercase text-5xl font-bold h-38 w-32 md:h-48 md:w-48 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer"
+                  className="uppercase text-5xl font-bold h-32 w-32 md:h-48 md:w-48 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa]"
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
                 >
                   {firstName
-                    ? firstName.split("").slice(0, 2)
-                    : userInfo.email.split("").slice(0, 2)}
+                    ? firstName.slice(0, 2)
+                    : userInfo.email.slice(0, 2)}
                 </div>
               )}
             </Avatar>
+
+            {/* Overlay on hover */}
             {hovered && (
               <div
                 className="absolute inset-0 flex bg-black/50 border-[1px] border-white justify-center items-center rounded-full cursor-pointer"
                 onClick={image ? handleImageDelete : handleFileInputClick}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
               >
                 {image ? (
                   <FaTrash className="text-white text-3xl" />
@@ -156,6 +160,8 @@ const Profile = () => {
                 )}
               </div>
             )}
+
+            {/* Hidden file input */}
             <input
               type="file"
               className="hidden"
@@ -165,6 +171,7 @@ const Profile = () => {
               accept=".png,.jpg,.jpeg,.svg,.webp"
             />
           </div>
+
           <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
             <div className="w-full">
               <Input

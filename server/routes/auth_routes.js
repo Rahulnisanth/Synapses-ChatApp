@@ -7,6 +7,7 @@ import {
   updateUserInfo,
   addProfileImage,
   deleteProfileImage,
+  logout,
 } from "../controllers/auth_controller.js";
 import { verifyToken } from "../middleware/auth_middleware.js";
 
@@ -24,5 +25,6 @@ auth_route.post(
   addProfileImage
 );
 auth_route.delete("/delete-profile-image", verifyToken, deleteProfileImage);
+auth_route.post("/logout", logout);
 
 export default auth_route;
