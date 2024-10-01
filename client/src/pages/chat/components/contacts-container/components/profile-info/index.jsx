@@ -51,9 +51,7 @@ const ProfileInfo = () => {
           </Avatar>
         </div>
         <div className="uppercase tracking-widest text-neutral-400 text-sm font-bold">
-          {userInfo.first_name && userInfo.last_name
-            ? `${userInfo.first_name} ${userInfo.last_name}`
-            : ""}
+          {userInfo.first_name ? `${userInfo.first_name}` : ""}
         </div>
       </div>
       <div className="flex gap-3">

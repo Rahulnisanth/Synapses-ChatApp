@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import auth_route from "./routes/auth_routes.js";
+import contact_route from "./routes/contact_routes.js";
 
 dotenv.config();
 const app = express();
@@ -27,6 +28,8 @@ app.use(express.json());
 
 // Auth routes
 app.use("/api/auth", auth_route);
+// Contact routes
+app.use("/api/contact", contact_route);
 
 // Uploads directory
 
