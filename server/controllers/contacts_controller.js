@@ -9,7 +9,7 @@ function escapeRegex(string) {
 export const searchContacts = async (request, response, next) => {
   try {
     const { searchTerm } = request.body;
-    if (!searchTerm) {
+    if (searchTerm === undefined || searchTerm === null || searchTerm === "") {
       return response.status(400).send("Search term is required.");
     }
     const sanitizedTerm = searchTerm.replace(/[^a-zA-Z0-9]/g, "");

@@ -5,7 +5,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { LuUserPlus2 } from "react-icons/lu";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { LuUserPlus2 } from "react-icons/lu";
 import { Input } from "@/components/ui/input";
 import { Player } from "@lottiefiles/react-lottie-player";
 import animationSource from "@/assets/lottie_animation.json";
@@ -27,7 +27,7 @@ const NewContacts = () => {
   const [resultContacts, setResultContacts] = useState([]);
   const searchContacts = async (searchTerm) => {
     try {
-      const response = await api_client.get(
+      const response = await api_client.post(
         SEARCH_CONTACT_ROUTE,
         { searchTerm },
         { withCredentials: true }
@@ -74,7 +74,7 @@ const NewContacts = () => {
 
           <ScrollArea className="h-[250px]">
             <div className="flex flex-col gap-5">
-              {resultContacts.map((contact) => {
+              {resultContacts.map((contact) => (
                 <div
                   key={contact._id}
                   className="flex gap-3 items-center cursor-pointer"
@@ -96,15 +96,17 @@ const NewContacts = () => {
                     </Avatar>
                   </div>
                   <div className="flex flex-col">
-                    <span>
+                    <span className="text-sm text-neutral-400">
                       {contact.first_name && contact.last_name
-                        ? `${contact.first_name}``${contact.last_name}`
+                        ? `${contact.first_name} ${contact.last_name}`
                         : ""}
                     </span>
-                    <span>{contact.email}</span>
+                    <span className="text-sm text-neutral-400">
+                      {contact.email}
+                    </span>
                   </div>
-                </div>;
-              })}
+                </div>
+              ))}
             </div>
           </ScrollArea>
 
