@@ -21,10 +21,13 @@ import { SEARCH_CONTACT_ROUTE } from "@/utils/constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar } from "@/components/ui/avatar";
 import { HOST } from "@/utils/constants";
+import { useAppStore } from "@/store";
 
 const NewContacts = () => {
+  const { setSelectedChatType, setSelectedChatData } = useAppStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [resultContacts, setResultContacts] = useState([]);
+  // Contact searching handler...
   const searchContacts = async (searchTerm) => {
     try {
       const response = await api_client.post(
@@ -41,6 +44,14 @@ const NewContacts = () => {
       console.log(err);
     }
   };
+  // Chat selection handler...
+  const selectNewContact = (contact) => {
+    setModalOpen(false);
+    setSelectedChatType("contact");
+    setSelectedChatData(contact);
+    setResultContacts([]);
+  };
+
   return (
     <>
       <TooltipProvider>
@@ -77,6 +88,7 @@ const NewContacts = () => {
               {resultContacts.map((contact) => (
                 <div
                   key={contact._id}
+                  onClick={() => selectNewContact(contact)}
                   className="flex gap-3 items-center cursor-pointer"
                 >
                   <div className="relative h-10 w-10">

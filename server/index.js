@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import auth_route from "./routes/auth_routes.js";
 import contact_route from "./routes/contact_routes.js";
+import { setUpSocket } from "./socket.js";
 
 dotenv.config();
 const app = express();
@@ -31,11 +32,11 @@ app.use("/api/auth", auth_route);
 // Contact routes
 app.use("/api/contact", contact_route);
 
-// Uploads directory
-
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}/`);
 });
+
+setUpSocket(server);
 
 mongoose
   .connect(database_url)
