@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useAppStore } from "@/store";
 import { HOST } from "@/utils/constants";
 import { useContext, useEffect, createContext, useRef } from "react";
@@ -18,6 +19,22 @@ export const SocketProvider = ({ children }) => {
         withCredentials: true,
         query: { user_id: userInfo.id },
       });
+
+      const handleMessage = (message) => {
+        const { selectedChatType, selectedChatData, addMessage } =
+          useAppStore.getState();
+        if (
+          selectedChatType !== undefined &&
+          (selectedChatData._id === message.sender._id ||
+            selectedChatData._id === message.recipient._id)
+        ) {
+          console.log("Message received => ", message);
+          addMessage(message);
+        }
+      };
+
+      socket.current.on("receiveMessage", handleMessage);
+
       //   connection module
       socket.current.on("connect", () => {
         console.log("Connected to the socket server");
