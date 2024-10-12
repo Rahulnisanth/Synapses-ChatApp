@@ -27,6 +27,11 @@ export const setUpSocket = (server) => {
       const senderSocketId = userSocketMap.get(message.sender);
       const recipientSocketId = userSocketMap.get(message.recipient);
 
+      // Check if message has required fields
+      if (!message.sender || !message.recipient || !message.content) {
+        throw new Error("Message must have sender, recipient, and content");
+      }
+
       const createdMessage = await Message.create(message);
       const messageData = await Message.findById(createdMessage._id)
         .populate("sender", "id email first_name last_name image")
@@ -42,6 +47,10 @@ export const setUpSocket = (server) => {
       }
     } catch (err) {
       console.error("Error sending message:", err);
+      // Optionally emit an error event to the sender
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("messageError", { error: err.message });
+      }
     }
   };
 

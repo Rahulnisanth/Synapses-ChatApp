@@ -13,6 +13,7 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
   const socket = useRef();
   const { userInfo } = useAppStore();
+
   useEffect(() => {
     if (userInfo) {
       socket.current = io(HOST, {
@@ -39,9 +40,16 @@ export const SocketProvider = ({ children }) => {
       socket.current.on("connect", () => {
         console.log("Connected to the socket server");
       });
+
+      //   error handling
+      socket.current.on("connect_error", (error) => {
+        console.error("Connection error: ", error);
+      });
+
       //   disconnection module
       return () => {
         socket.current.disconnect();
+        socket.current.off("receiveMessage", handleMessage); // Clean up the event listener
       };
     }
   }, [userInfo]);

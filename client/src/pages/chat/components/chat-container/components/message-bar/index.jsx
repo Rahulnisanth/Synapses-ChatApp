@@ -31,13 +31,15 @@ const MessageBar = () => {
 
   const handleSendMessage = () => {
     if (selectedChatType === "contact") {
-      socket.emit("sendMessage", {
+      const newMessage = {
         sender: userInfo.id,
         recipient: selectedChatData._id,
         content: message,
         messageType: "text",
-        fileUrl: undefined,
-      });
+        timestamp: new Date(),
+      };
+      socket.emit("sendMessage", newMessage);
+      useAppStore.getState().addMessage(newMessage);
     }
     setMessage("");
   };
@@ -51,7 +53,11 @@ const MessageBar = () => {
           className="flex-1 p-3 sm:p-4 md:p-5 bg-transparent rounded-md focus:border-none focus:outline-none text-sm sm:text-base md:text-lg"
           placeholder="Enter the message here"
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) =>
+            setMessage(
+              e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)
+            )
+          }
         />
         {/* Attachment Button */}
         <button className="text-neutral-500 hover:text-white focus:outline-none duration-300 transition-all">
