@@ -11,7 +11,13 @@ import { ADD_FILES_ROUTE } from "@/utils/constants";
 const MessageBar = () => {
   const emojiRef = useRef();
   const fileInputRef = useRef();
-  const { selectedChatType, selectedChatData, userInfo } = useAppStore();
+  const {
+    selectedChatType,
+    selectedChatData,
+    userInfo,
+    setIsUploading,
+    setFileUploadProgress,
+  } = useAppStore();
   const socket = useSocket();
   const [message, setMessage] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
@@ -54,29 +60,39 @@ const MessageBar = () => {
   };
 
   const handleAttachmentChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await api_client.post(ADD_FILES_ROUTE, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
-      if (response.status === 200 && response.data) {
-        if (selectedChatType === "contact") {
-          const newMessage = {
-            sender: userInfo.id,
-            recipient: selectedChatData._id,
-            content: undefined,
-            messageType: "file",
-            fileUrl: response.data.filePath,
-            timestamp: new Date(),
-          };
-          socket.emit("sendMessage", newMessage);
+    try {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        setIsUploading(true);
+        const response = await api_client.post(ADD_FILES_ROUTE, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+          onUploadProgress: (data) => {
+            setFileUploadProgress(Math.round((100 * data.loaded) / data.total));
+          },
+        });
+        if (response.status === 200 && response.data) {
+          setIsUploading(false);
+          if (selectedChatType === "contact") {
+            const newMessage = {
+              sender: userInfo.id,
+              recipient: selectedChatData._id,
+              content: undefined,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+              timestamp: new Date(),
+            };
+            socket.emit("sendMessage", newMessage);
+          }
         }
       }
+    } catch (err) {
+      setIsUploading(false);
+      console.log(err);
     }
   };
 

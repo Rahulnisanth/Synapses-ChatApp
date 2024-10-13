@@ -15,6 +15,8 @@ const MessageContainer = () => {
     selectedChatData,
     selectedChatMessages,
     setSelectedChatMessages,
+    setIsDownloading,
+    setFileDownloadProgress,
   } = useAppStore();
 
   const checkImage = (filePath) => {
@@ -50,8 +52,14 @@ const MessageContainer = () => {
   }, [selectedChatMessages]);
 
   const handleDownload = async (fileUrl) => {
+    setIsDownloading(true);
+    setFileDownloadProgress(0);
     const response = await api_client.get(`${HOST}/${fileUrl}`, {
       responseType: "blob",
+      onDownloadProgress: (event) => {
+        const { loaded, total } = event;
+        setFileDownloadProgress(Math.round((100 * loaded) / total));
+      },
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
@@ -61,6 +69,8 @@ const MessageContainer = () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(urlBlob);
+    setIsDownloading(false);
+    setFileDownloadProgress(0);
   };
 
   const renderMessages = () => {
@@ -176,7 +186,7 @@ const MessageContainer = () => {
           </div>
         </div>
       )}
-      <div ref={scrollRef} className="h-10 w-10 hidden" />
+      <div ref={scrollRef} className="h-10 w-10" />
     </div>
   );
 };
