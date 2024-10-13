@@ -149,28 +149,30 @@ const MessageContainer = () => {
       {renderMessages()}
       {imageModalOpen && (
         <div className="fixed z-[1000] top-0 left-0 h-full w-full flex flex-col items-center justify-center backdrop-blur-lg">
-          <div>
-            <img
-              src={`${HOST}/${imageUrl}`}
-              className="max-h-[80vh] max-w-full object-contain"
-            />
-          </div>
-          <div className="flex gap-5 mt-5">
-            <button
-              onClick={() => handleDownload(imageUrl)}
-              className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3"
-            >
-              <MdOutlineDownloading />
-            </button>
-            <button
-              onClick={() => {
-                setImageModalOpen(false);
-                setImageUrl(null);
-              }}
-              className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3"
-            >
-              <IoCloseCircle />
-            </button>
+          <div className="flex w-[90%] md:w-full flex-col justify-center items-center">
+            <div>
+              <img
+                src={`${HOST}/${imageUrl}`}
+                className="max-h-[80vh] max-w-full object-contain"
+              />
+            </div>
+            <div className="flex gap-5 mt-5">
+              <button
+                onClick={() => handleDownload(imageUrl)}
+                className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3"
+              >
+                <MdOutlineDownloading />
+              </button>
+              <button
+                onClick={() => {
+                  setImageModalOpen(false);
+                  setImageUrl(null);
+                }}
+                className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3"
+              >
+                <IoCloseCircle />
+              </button>
+            </div>
           </div>
         </div>
       )}
