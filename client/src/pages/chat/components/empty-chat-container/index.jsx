@@ -14,7 +14,7 @@ const EmptyChatContainer = () => {
       <div className="text-center text-opacity-80 text-white flex flex-col gap-5 items-center mt-5 lg:text-4xl text-3xl transition-all duration-300">
         <h3 className="font-bold">
           <span className="text-5xl">🚀</span> Welcome to
-          <span className="text-purple-500"> Synapses</span> Chat App.
+          <span className="text-purple-500"> Synapses</span> Chat App
         </h3>
         <p className="text-xl lg:text-2xl text-gray-400 mt-2">
           Your conversations start here. Select a chat or start a new one to

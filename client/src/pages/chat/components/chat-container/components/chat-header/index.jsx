@@ -28,7 +28,7 @@ const ChatHeader = () => {
             )}
           </Avatar>
         </div>
-        <span className="text-xl md:text-2xl lg:text-3xl font-medium tracking-wider text-neutral-200">
+        <span className="text-xl md:text-2xl lg:text-3xl font-bold text-opacity-90 text-md text-gray-400">
           {selectedChatType === "contact"
             ? selectedChatData.first_name && selectedChatData.last_name
               ? `${selectedChatData.first_name} ${selectedChatData.last_name}`
