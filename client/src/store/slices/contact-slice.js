@@ -38,4 +38,10 @@ export const create_chat_slice = (set, get) => ({
   setFileUploadProgress: (fileUploadProgress) => set({ fileUploadProgress }),
   setFileDownloadProgress: (fileDownloadProgress) =>
     set({ fileDownloadProgress }),
+  channels: [],
+  setChannels: (channels) => set({ channels }),
+  addChannels: (channel) => {
+    const channels = get().channels;
+    set({ channels: [channel, ...channels] });
+  },
 });

@@ -33,22 +33,24 @@ const ContactList = ({ contacts, isChannel = false }) => {
           onClick={() => handleClick(contact)}
         >
           <div className="flex items-center gap-3 justify-start text-neutral-300">
-            <Avatar className="h-8 w-8 rounded-full overflow-hidden">
-              {contact.image ? (
-                <img
-                  src={`${HOST}/${contact.image}`}
-                  className="object-cover h-full w-full rounded-full"
-                />
-              ) : (
-                <div className="uppercase text-xs font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
-                  {contact.first_name
-                    ? contact.first_name.split("").slice(0, 2)
-                    : contact.email.split("").slice(0, 2)}
-                </div>
-              )}
-            </Avatar>
+            {!isChannel && (
+              <Avatar className="h-8 w-8 rounded-full overflow-hidden">
+                {contact.image ? (
+                  <img
+                    src={`${HOST}/${contact.image}`}
+                    className="object-cover h-full w-full rounded-full"
+                  />
+                ) : (
+                  <div className="uppercase text-xs font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
+                    {contact.first_name
+                      ? contact.first_name.split("").slice(0, 2)
+                      : contact.email.split("").slice(0, 2)}
+                  </div>
+                )}
+              </Avatar>
+            )}
             {isChannel && (
-              <div className="bg-[#ffffff22] h-10 w-10 flex items-center justify-center rounded-full">
+              <div className="font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#683c8c57] text-purple-500 border-[1px] border-purple-500">
                 #
               </div>
             )}

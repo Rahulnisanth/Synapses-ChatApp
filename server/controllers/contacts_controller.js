@@ -81,3 +81,24 @@ export const getDMList = async (request, response, next) => {
     return response.status(500).send("Internal server error!");
   }
 };
+
+// All contacts controller :
+export const getAllContacts = async (request, response, next) => {
+  try {
+    const users = await User.find(
+      { _id: { $ne: request.user_id } },
+      "_id first_name last_name email"
+    );
+    const contacts = users.map((user) => ({
+      label:
+        user.first_name && user.last_name
+          ? `${user.first_name} ${user.last_name}`
+          : user.email,
+      value: user._id,
+    }));
+    return response.status(200).json({ contacts });
+  } catch (err) {
+    console.error("Error occurred during contact search", err);
+    return response.status(500).send("Internal server error!");
+  }
+};
