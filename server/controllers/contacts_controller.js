@@ -1,4 +1,6 @@
+import { Message } from "../models/message_model.js";
 import { User } from "../models/user_model.js";
+import Mongoose from "mongoose";
 
 // Function to escape special regex characters
 function escapeRegex(string) {
@@ -24,6 +26,55 @@ export const searchContacts = async (request, response, next) => {
         },
       ],
     });
+    return response.status(200).json({ contacts });
+  } catch (err) {
+    console.error("Error occurred during contact search", err);
+    return response.status(500).send("Internal server error!");
+  }
+};
+
+// DM List controller:
+export const getDMList = async (request, response, next) => {
+  try {
+    let { user_id } = request;
+    user_id = new Mongoose.Types.ObjectId(user_id);
+    if (!user_id) return response.status(400).send("User ID is required.");
+    const contacts = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: user_id }, { recipient: user_id }],
+        },
+      },
+      { $sort: { timestamp: -1 } },
+      {
+        $group: {
+          _id: {
+            $cond: [{ $eq: ["$sender", user_id] }, "$recipient", "$sender"],
+          },
+          lastMessageTime: { $first: "$timestamp" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "contactInfo",
+        },
+      },
+      { $unwind: "$contactInfo" },
+      {
+        $project: {
+          _id: 1,
+          lastMessageTime: 1,
+          email: "$contactInfo.email",
+          first_name: "$contactInfo.first_name",
+          last_name: "$contactInfo.last_name",
+          image: "$contactInfo.image",
+        },
+      },
+      { $sort: { lastMessageTime: -1 } },
+    ]);
     return response.status(200).json({ contacts });
   } catch (err) {
     console.error("Error occurred during contact search", err);
