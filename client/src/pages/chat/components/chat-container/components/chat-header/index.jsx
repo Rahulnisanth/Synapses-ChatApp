@@ -12,30 +12,36 @@ const ChatHeader = () => {
       {/* Channel/Message Name */}
       <div className="flex gap-4 items-center">
         <div className="relative h-12 w-12">
-          <Avatar className="h-12 w-12 rounded-full overflow-hidden shadow-lg">
-            {selectedChatData.image ? (
-              <img
-                src={`${HOST}/${selectedChatData.image}`}
-                className="object-cover h-full w-full rounded-full"
-                alt="Chat Avatar"
-              />
-            ) : (
-              <div className="uppercase text-lg font-bold h-12 w-12 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa]">
-                {selectedChatData.first_name
-                  ? selectedChatData.first_name.substring(0, 2)
-                  : selectedChatData.email.substring(0, 2)}
-              </div>
-            )}
-          </Avatar>
+          {selectedChatType === "contact" ? (
+            <Avatar className="h-12 w-12 rounded-full overflow-hidden shadow-lg">
+              {selectedChatData.image ? (
+                <img
+                  src={`${HOST}/${selectedChatData.image}`}
+                  className="object-cover h-full w-full rounded-full"
+                  alt="Chat Avatar"
+                />
+              ) : (
+                <div className="uppercase text-lg font-bold h-12 w-12 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa]">
+                  {selectedChatData.first_name
+                    ? selectedChatData.first_name.substring(0, 2)
+                    : selectedChatData.email.substring(0, 2)}
+                </div>
+              )}
+            </Avatar>
+          ) : (
+            <div className="font-bold text-2xl h-12 w-12 rounded-full flex justify-center items-center bg-[#683c8c57] text-purple-500 border-[1px] border-purple-500">
+              #
+            </div>
+          )}
         </div>
-        <span className="text-xl md:text-2xl lg:text-3xl font-bold text-opacity-90 text-md text-gray-400">
+        <span className="text-2xl md:text-3xl font-bold text-opacity-90 text-md text-gray-400">
           {selectedChatType === "contact"
             ? selectedChatData.first_name && selectedChatData.last_name
               ? `${selectedChatData.first_name} ${selectedChatData.last_name}`
               : selectedChatData.email
               ? `${selectedChatData.email}`
               : ""
-            : "Channel Name"}
+            : selectedChatData.name}
         </span>
       </div>
 
