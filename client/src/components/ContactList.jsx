@@ -8,7 +8,6 @@ const ContactList = ({ contacts, isChannel = false }) => {
     selectedChatData,
     setSelectedChatData,
     setSelectedChatType,
-    selectedChatType,
     setSelectedChatMessages,
   } = useAppStore();
 
@@ -28,12 +27,12 @@ const ContactList = ({ contacts, isChannel = false }) => {
           key={contact._id}
           className={`pl-5 py-2 transition-all duration-300 cursor-pointer ${
             selectedChatData && selectedChatData._id === contact._id
-              ? "bg-[#8417ff] hover:bg-[#8417ff]/50"
+              ? "bg-[#8417ff] hover:bg-[#8417ff]"
               : "hover:bg-[#f1f1f111]"
           }`}
           onClick={() => handleClick(contact)}
         >
-          <div className="flex items-center gap-5 justify-start text-neutral-300">
+          <div className="flex items-center gap-3 justify-start text-neutral-300">
             <Avatar className="h-8 w-8 rounded-full overflow-hidden">
               {contact.image ? (
                 <img
@@ -41,7 +40,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
                   className="object-cover h-full w-full rounded-full"
                 />
               ) : (
-                <div className="uppercase text-lg font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
+                <div className="uppercase text-xs font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
                   {contact.first_name
                     ? contact.first_name.split("").slice(0, 2)
                     : contact.email.split("").slice(0, 2)}

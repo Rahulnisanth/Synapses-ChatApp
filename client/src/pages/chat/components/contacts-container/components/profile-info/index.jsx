@@ -7,8 +7,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RiEdit2Fill } from "react-icons/ri";
-import { FaPowerOff } from "react-icons/fa6";
+import { FaCircleUser } from "react-icons/fa6";
+import { FaCircleXmark } from "react-icons/fa6";
 import { HOST, LOGOUT_ROUTE } from "@/utils/constants";
 import { useNavigate } from "react-router-dom";
 import { api_client } from "@/lib/api-client";
@@ -34,15 +34,15 @@ const ProfileInfo = () => {
   return (
     <div className="absolute bottom-0 flex justify-between items-center w-full h-16 px-4 bg-[#2a2b33]">
       <div className="flex justify-center items-center gap-3">
-        <div className="relative h-10 w-10">
-          <Avatar className="h-10 w-10 rounded-full overflow-hidden">
+        <div className="relative h-8 w-8">
+          <Avatar className="h-8 w-8 rounded-full overflow-hidden">
             {userInfo.image ? (
               <img
                 src={`${HOST}/${userInfo.image}`}
                 className="object-cover h-full w-full rounded-full"
               />
             ) : (
-              <div className="uppercase text-lg font-bold h-10 w-10 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
+              <div className="uppercase text-xs font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
                 {userInfo.first_name
                   ? userInfo.first_name.split("").slice(0, 2)
                   : userInfo.email.split("").slice(0, 2)}
@@ -50,7 +50,7 @@ const ProfileInfo = () => {
             )}
           </Avatar>
         </div>
-        <div className="uppercase tracking-widest text-neutral-400 text-sm font-light">
+        <div className="text-neutral-300 font-light">
           {userInfo.first_name && userInfo.last_name
             ? `${userInfo.first_name} ${userInfo.last_name}`
             : ""}
@@ -60,9 +60,9 @@ const ProfileInfo = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <RiEdit2Fill
+              <FaCircleUser
                 onClick={() => navigate(`/profile`)}
-                className="text-purple-500 text-2xl"
+                className="text-green-500 text-xl"
               />
             </TooltipTrigger>
             <TooltipContent className="bg-[#1c1b1e] border-none text-white">
@@ -73,7 +73,7 @@ const ProfileInfo = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <FaPowerOff
+              <FaCircleXmark
                 onClick={handleLogout}
                 className="text-red-500 text-xl"
               />

@@ -8,41 +8,42 @@ const ChatHeader = () => {
   const { closeChat, selectedChatData, selectedChatType } = useAppStore();
 
   return (
-    <div className="h-[10vh] md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full border-b-2 border-[#2f303b] flex items-center justify-between px-8">
+    <div className="h-[10vh] md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full border-b border-gray-700 bg-[#1e1e2a] shadow-md flex items-center justify-between px-6 md:px-8">
       {/* Channel/Message Name */}
-      <div className="flex gap-3 items-center">
-        <div className="relative h-10 w-10">
-          <Avatar className="h-10 w-10 rounded-full overflow-hidden">
+      <div className="flex gap-4 items-center">
+        <div className="relative h-12 w-12">
+          <Avatar className="h-12 w-12 rounded-full overflow-hidden shadow-lg">
             {selectedChatData.image ? (
               <img
                 src={`${HOST}/${selectedChatData.image}`}
                 className="object-cover h-full w-full rounded-full"
+                alt="Chat Avatar"
               />
             ) : (
-              <div className="uppercase text-lg font-bold h-10 w-10 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
+              <div className="uppercase text-lg font-bold h-12 w-12 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa]">
                 {selectedChatData.first_name
-                  ? selectedChatData.first_name.split("").slice(0, 2)
-                  : selectedChatData.email.split("").slice(0, 2)}
+                  ? selectedChatData.first_name.substring(0, 2)
+                  : selectedChatData.email.substring(0, 2)}
               </div>
             )}
           </Avatar>
         </div>
-        <p className="text-2xl md:text-3xl font-medium tracking-wider text-neutral-300">
+        <span className="text-xl md:text-2xl lg:text-3xl font-medium tracking-wider text-neutral-200">
           {selectedChatType === "contact"
             ? selectedChatData.first_name && selectedChatData.last_name
               ? `${selectedChatData.first_name} ${selectedChatData.last_name}`
               : selectedChatData.email
               ? `${selectedChatData.email}`
               : ""
-            : "channel name"}
-        </p>
+            : "Channel Name"}
+        </span>
       </div>
 
       {/* Close Button */}
       <div className="flex items-center">
         <button
           onClick={closeChat}
-          className="text-neutral-500 hover:text-white focus:outline-none duration-300 transition-all"
+          className="text-gray-400 hover:text-red-500 focus:outline-none transition-colors duration-200 ease-in-out"
         >
           <RiCloseFill className="text-3xl" />
         </button>
