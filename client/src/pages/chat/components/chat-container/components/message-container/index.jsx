@@ -1,10 +1,15 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useAppStore } from "@/store";
 import moment from "moment";
 import { api_client } from "@/lib/api-client";
-import { GET_MESSAGES_ROUTE } from "@/utils/constants";
+import { GET_MESSAGES_ROUTE, HOST } from "@/utils/constants";
+import { MdFolderZip, MdOutlineDownloading } from "react-icons/md";
+import { IoCloseCircle } from "react-icons/io5";
+
 const MessageContainer = () => {
   const scrollRef = useRef(null);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
   const {
     selectedChatType,
     selectedChatData,
@@ -12,27 +17,29 @@ const MessageContainer = () => {
     setSelectedChatMessages,
   } = useAppStore();
 
+  const checkImage = (filePath) => {
+    const imageRegex =
+      /\.(jpg|jpeg|png|gif|bmp|tiff|tif|webp|svg|ico|heic|heif)$/i;
+    return imageRegex.test(filePath);
+  };
+
   useEffect(() => {
-    try {
-      const getMessages = async () => {
+    const getMessages = async () => {
+      try {
         const response = await api_client.post(
           GET_MESSAGES_ROUTE,
-          {
-            id: selectedChatData._id,
-          },
+          { id: selectedChatData._id },
           { withCredentials: true }
         );
         if (response.data.messages) {
           setSelectedChatMessages(response.data.messages);
         }
-      };
-      if (selectedChatData._id) {
-        if (selectedChatType === "contact") {
-          getMessages();
-        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
+    };
+    if (selectedChatData._id && selectedChatType === "contact") {
+      getMessages();
     }
   }, [selectedChatType, selectedChatData, setSelectedChatMessages]);
 
@@ -41,6 +48,20 @@ const MessageContainer = () => {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChatMessages]);
+
+  const handleDownload = async (fileUrl) => {
+    const response = await api_client.get(`${HOST}/${fileUrl}`, {
+      responseType: "blob",
+    });
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = urlBlob;
+    link.setAttribute("download", fileUrl.split("/").pop());
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(urlBlob);
+  };
 
   const renderMessages = () => {
     let lastDate = null;
@@ -65,15 +86,57 @@ const MessageContainer = () => {
     const isSentByUser = message.sender === selectedChatData._id;
     return (
       <div className={`${isSentByUser ? "text-left" : "text-right"}`}>
-        <div
-          className={`${
-            isSentByUser
-              ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
-              : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-          } border inline-block p-4 rounded my-1 max-w-[70%] break-words`}
-        >
-          {message.content}
-        </div>
+        {message.messageType === "text" && (
+          <div
+            className={`${
+              isSentByUser
+                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
+                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+          >
+            {message.content}
+          </div>
+        )}
+        {message.messageType === "file" && (
+          <div
+            className={`${
+              isSentByUser
+                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
+                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+          >
+            {checkImage(message.fileUrl) ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setImageModalOpen(true);
+                  setImageUrl(message.fileUrl);
+                }}
+              >
+                <img
+                  src={`${HOST}/${message.fileUrl}`}
+                  alt="File"
+                  className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3">
+                  <MdFolderZip />
+                </span>
+                <span className="truncate max-w-[50%] sm:max-w-[65%]">
+                  {message.fileUrl.split("/").slice(-1)[0]}
+                </span>
+                <span
+                  className="text-2xl sm:text-3xl cursor-pointer"
+                  onClick={() => handleDownload(message.fileUrl)}
+                >
+                  <MdOutlineDownloading />
+                </span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="text-xs text-gray-500">
           {moment(message.timestamp).format("LT")}
         </div>
@@ -84,7 +147,34 @@ const MessageContainer = () => {
   return (
     <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 px-8 md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full">
       {renderMessages()}
-      <div ref={scrollRef} className="h-10 w-10" />
+      {imageModalOpen && (
+        <div className="fixed z-[1000] top-0 left-0 h-full w-full flex flex-col items-center justify-center backdrop-blur-lg">
+          <div>
+            <img
+              src={`${HOST}/${imageUrl}`}
+              className="max-h-[80vh] max-w-full object-contain"
+            />
+          </div>
+          <div className="flex gap-5 mt-5">
+            <button
+              onClick={() => handleDownload(imageUrl)}
+              className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3"
+            >
+              <MdOutlineDownloading />
+            </button>
+            <button
+              onClick={() => {
+                setImageModalOpen(false);
+                setImageUrl(null);
+              }}
+              className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3"
+            >
+              <IoCloseCircle />
+            </button>
+          </div>
+        </div>
+      )}
+      <div ref={scrollRef} className="h-10 w-10 hidden" />
     </div>
   );
 };

@@ -27,27 +27,20 @@ export const setUpSocket = (server) => {
       const senderSocketId = userSocketMap.get(message.sender);
       const recipientSocketId = userSocketMap.get(message.recipient);
 
-      // Check if message has required fields
-      if (!message.sender || !message.recipient || !message.content) {
-        throw new Error("Message must have sender, recipient, and content");
-      }
-
       const createdMessage = await Message.create(message);
       const messageData = await Message.findById(createdMessage._id)
         .populate("sender", "id email first_name last_name image")
         .populate("recipient", "id email first_name last_name image");
 
-      // Send message to the recipient if they are online
+      // Emit the message to the recipient and sender as before
       if (recipientSocketId) {
         io.to(recipientSocketId).emit("receiveMessage", messageData);
       }
-      // Optionally send the message to the sender as well to update their interface
       if (senderSocketId) {
         io.to(senderSocketId).emit("messageSent", messageData);
       }
     } catch (err) {
       console.error("Error sending message:", err);
-      // Optionally emit an error event to the sender
       if (senderSocketId) {
         io.to(senderSocketId).emit("messageError", { error: err.message });
       }
