@@ -6,6 +6,8 @@ import { useAppStore } from "./store";
 import { useEffect, useState } from "react";
 import { api_client } from "./lib/api-client";
 import { USER_INFO_ROUTE } from "./utils/constants";
+import Hero from "./pages/hero";
+import NotFound from "./pages/not-found";
 
 const PrivateRoute = ({ children }) => {
   const { userInfo } = useAppStore();
@@ -80,7 +82,8 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/" element={<Hero />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
