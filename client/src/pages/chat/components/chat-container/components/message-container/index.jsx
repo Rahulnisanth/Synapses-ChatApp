@@ -5,12 +5,14 @@ import { api_client } from "@/lib/api-client";
 import { GET_MESSAGES_ROUTE, HOST } from "@/utils/constants";
 import { MdFolderZip, MdOutlineDownloading } from "react-icons/md";
 import { IoCloseCircle } from "react-icons/io5";
+import { Avatar } from "@/components/ui/avatar";
 
 const MessageContainer = () => {
   const scrollRef = useRef(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const {
+    userInfo,
     selectedChatType,
     selectedChatData,
     selectedChatMessages,
@@ -86,13 +88,15 @@ const MessageContainer = () => {
               {moment(messageDate).format("LL")}
             </div>
           )}
-          {renderMessage(message)}
+          {selectedChatType === "contact" && renderMessage(message)}
+          {selectedChatType === "channel" && renderChannelMessages(message)}
         </div>
       );
     });
   };
 
   const renderMessage = (message) => {
+    console.log("Sender details => ", message.sender._id);
     const isSentByUser = message.sender === selectedChatData._id;
     return (
       <div className={`${isSentByUser ? "text-left" : "text-right"}`}>
@@ -150,6 +154,98 @@ const MessageContainer = () => {
         <div className="text-xs text-gray-500">
           {moment(message.timestamp).format("LT")}
         </div>
+      </div>
+    );
+  };
+
+  const renderChannelMessages = (message) => {
+    console.log(message);
+    const isSentByUser = message.sender === userInfo.id;
+    return (
+      <div className={`${isSentByUser ? "text-right" : "text-left"}`}>
+        {/* Text chat box */}
+        {message.messageType === "text" && (
+          <div
+            className={`${
+              isSentByUser
+                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
+                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+          >
+            {message.content}
+          </div>
+        )}
+        {/* {message.sender._id !== userInfo.id ? (
+          <div className="flex justify-end items-center gap-2">
+            <Avatar className="h-6 w-6 rounded-full overflow-hidden">
+              {message.sender.image ? (
+                <img
+                  src={`${HOST}/${message.sender.image}`}
+                  className="object-cover h-full w-full rounded-full"
+                  alt="message.sender avatar"
+                />
+              ) : (
+                <div className="uppercase text-lg font-bold h-6 w-6 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
+                  {message.sender.first_name
+                    ? message.sender.first_name.slice(0, 2)
+                    : message.sender.email.slice(0, 2)}
+                </div>
+              )}
+            </Avatar>
+            <span className="text-sm text-gray-500">{`${message.sender.first_name} ${message.sender.last_name}`}</span>
+            <span className="text-xs text-gray-500">
+              {moment(message.timestamp).format("LT")}
+            </span>
+          </div>
+        ) : (
+          <div className="text-xs text-gray-500">
+            {moment(message.timestamp).format("LT")}
+          </div>
+        )} */}
+        {/* File chat box */}
+        {message.messageType === "file" && (
+          <div
+            className={`${
+              isSentByUser
+                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
+                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+          >
+            {checkImage(message.fileUrl) ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setImageModalOpen(true);
+                  setImageUrl(message.fileUrl);
+                }}
+              >
+                <img
+                  src={`${HOST}/${message.fileUrl}`}
+                  alt="File"
+                  className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3">
+                  <MdFolderZip />
+                </span>
+                <span className="truncate max-w-[50%] sm:max-w-[65%]">
+                  {message.fileUrl.split("/").slice(-1)[0]}
+                </span>
+                <span
+                  className="text-2xl sm:text-3xl cursor-pointer"
+                  onClick={() => handleDownload(message.fileUrl)}
+                >
+                  <MdOutlineDownloading />
+                </span>
+              </div>
+            )}
+            <div className="text-xs text-gray-500">
+              {moment(message.timestamp).format("LT")}
+            </div>
+          </div>
+        )}
       </div>
     );
   };

@@ -39,16 +39,28 @@ const MessageBar = () => {
   };
 
   const handleSendMessage = () => {
-    if (selectedChatType === "contact") {
+    if (socket && selectedChatType === "contact") {
       const newMessage = {
         sender: userInfo.id,
         recipient: selectedChatData._id,
         content: message,
         messageType: "text",
+        fileUrl: undefined,
         timestamp: new Date(),
       };
       socket.emit("sendMessage", newMessage);
       useAppStore.getState().addMessage(newMessage);
+    } else if (selectedChatType === "channel") {
+      const newChannelMessage = {
+        sender: userInfo.id,
+        channelId: selectedChatData._id,
+        content: message,
+        messageType: "text",
+        fileUrl: undefined,
+        timestamp: new Date(),
+      };
+      socket.emit("sendChannelMessage", newChannelMessage);
+      useAppStore.getState().addMessage(newChannelMessage);
     }
     setMessage("");
   };
@@ -87,6 +99,16 @@ const MessageBar = () => {
               timestamp: new Date(),
             };
             socket.emit("sendMessage", newMessage);
+          } else if (selectedChatType === "channel") {
+            const newMessage = {
+              sender: userInfo.id,
+              channelId: selectedChatData._id,
+              content: undefined,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+              timestamp: new Date(),
+            };
+            socket.emit("sendChannelMessage", newMessage);
           }
         }
       }
