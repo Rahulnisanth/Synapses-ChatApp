@@ -62,10 +62,7 @@ export const setUpSocket = (server) => {
     });
 
     const messageData = await Message.findById(createdMessage._id)
-      .populate({
-        path: "sender",
-        select: "_id email first_name last_name image",
-      })
+      .populate("sender", "_id email first_name last_name image")
       .exec();
 
     await Channel.findByIdAndUpdate(channelId, {

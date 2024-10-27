@@ -96,7 +96,7 @@ const MessageContainer = () => {
   };
 
   const renderMessage = (message) => {
-    console.log("Sender details => ", message.sender._id);
+    console.log("Message container : ", message);
     const isSentByUser = message.sender === selectedChatData._id;
     return (
       <div className={`${isSentByUser ? "text-left" : "text-right"}`}>
