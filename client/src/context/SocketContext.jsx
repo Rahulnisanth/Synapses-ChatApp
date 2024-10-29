@@ -34,8 +34,12 @@ export const SocketProvider = ({ children }) => {
       };
 
       const handleChannelMessage = (message) => {
-        const { selectedChatType, selectedChatData, addMessage } =
-          useAppStore.getState();
+        const {
+          selectedChatType,
+          selectedChatData,
+          addMessage,
+          addChannelForward,
+        } = useAppStore.getState();
         if (
           selectedChatType &&
           message.channelId &&
@@ -43,6 +47,7 @@ export const SocketProvider = ({ children }) => {
         ) {
           addMessage(message);
         }
+        addChannelForward(message);
       };
 
       // Set up event listeners for socket messages

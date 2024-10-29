@@ -2,7 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import { useAppStore } from "@/store";
 import moment from "moment";
 import { api_client } from "@/lib/api-client";
-import { GET_MESSAGES_ROUTE, HOST } from "@/utils/constants";
+import {
+  GET_CHANNEL_MESSAGES,
+  GET_MESSAGES_ROUTE,
+  HOST,
+} from "@/utils/constants";
 import { MdFolderZip, MdOutlineDownloading } from "react-icons/md";
 import { IoCloseCircle } from "react-icons/io5";
 import { Avatar } from "@/components/ui/avatar";
@@ -43,8 +47,23 @@ const MessageContainer = () => {
       }
     };
 
-    if (selectedChatData?._id && selectedChatType === "contact") {
-      getMessages();
+    const getChannelMessages = async () => {
+      try {
+        const response = await api_client.get(
+          `${GET_CHANNEL_MESSAGES}/${selectedChatData._id}`,
+          { withCredentials: true }
+        );
+        if (response.data.messages) {
+          setSelectedChatMessages(response.data.messages);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (selectedChatData?._id) {
+      if (selectedChatType === "contact") getMessages();
+      else if (selectedChatType === "channel") getChannelMessages();
     }
   }, [selectedChatData?._id, selectedChatType, setSelectedChatMessages]);
 
@@ -228,7 +247,7 @@ const MessageContainer = () => {
         {/* Sender Info (for received messages) */}
         {message.sender._id !== userInfo.id ? (
           <div className="flex items-center gap-2 mt-1">
-            <Avatar className="h-8 w-8 rounded-full overflow-hidden">
+            <Avatar className="h-7 w-7 rounded-full overflow-hidden">
               {message.sender.image ? (
                 <img
                   src={`${HOST}/${message.sender.image}`}
@@ -236,7 +255,7 @@ const MessageContainer = () => {
                   alt="avatar"
                 />
               ) : (
-                <div className="uppercase text-sm font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border border-[#ff006faa] cursor-pointer">
+                <div className="uppercase text-sm font-bold h-7 w-7 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border border-[#ff006faa] cursor-pointer">
                   {message.sender.first_name
                     ? message.sender.first_name.slice(0, 2)
                     : message.sender.email.slice(0, 2)}
@@ -244,7 +263,7 @@ const MessageContainer = () => {
               )}
             </Avatar>
             <div className="flex flex-col text-left">
-              <span className="text-sm font-semibold text-gray-600">
+              <span className="text-xs font-semibold text-gray-600">
                 {`${message.sender.first_name} ${message.sender.last_name}`}
               </span>
               <span className="text-xs text-gray-500">
