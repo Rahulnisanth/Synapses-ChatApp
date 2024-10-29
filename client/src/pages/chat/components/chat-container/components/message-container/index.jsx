@@ -61,11 +61,11 @@ const MessageContainer = () => {
       }
     };
 
-    if (selectedChatData?._id) {
+    if (selectedChatData._id) {
       if (selectedChatType === "contact") getMessages();
       else if (selectedChatType === "channel") getChannelMessages();
     }
-  }, [selectedChatData?._id, selectedChatType, setSelectedChatMessages]);
+  }, [selectedChatData, selectedChatType, setSelectedChatMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -118,7 +118,7 @@ const MessageContainer = () => {
   };
 
   const renderMessage = (message) => {
-    const isSentByUser = message.sender._id === selectedChatData._id;
+    const isSentByUser = message.sender !== selectedChatData._id;
     return (
       <div className={`${isSentByUser ? "text-right" : "text-left"}`}>
         {/* Text Message */}
@@ -188,7 +188,7 @@ const MessageContainer = () => {
   const renderChannelMessages = (message) => {
     const isSentByUser = message.sender._id === userInfo.id;
     return (
-      <div className={`${isSentByUser ? "text-right" : "text-left"}`}>
+      <div className={`${isSentByUser ? "text-right" : "text-left"} mt-2`}>
         {/* Text chat box */}
         {message.messageType === "text" && (
           <div
@@ -246,7 +246,7 @@ const MessageContainer = () => {
         )}
         {/* Sender Info (for received messages) */}
         {message.sender._id !== userInfo.id ? (
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2">
             <Avatar className="h-7 w-7 rounded-full overflow-hidden">
               {message.sender.image ? (
                 <img
@@ -255,7 +255,7 @@ const MessageContainer = () => {
                   alt="avatar"
                 />
               ) : (
-                <div className="uppercase text-sm font-bold h-7 w-7 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border border-[#ff006faa] cursor-pointer">
+                <div className="uppercase text-xs font-bold h-7 w-7 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border border-[#ff006faa] cursor-pointer">
                   {message.sender.first_name
                     ? message.sender.first_name.slice(0, 2)
                     : message.sender.email.slice(0, 2)}

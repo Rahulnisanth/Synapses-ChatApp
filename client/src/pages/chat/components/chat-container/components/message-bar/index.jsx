@@ -53,7 +53,6 @@ const MessageBar = () => {
       newMessage.channelId = selectedChatData._id;
       socket.emit("sendChannelMessage", newMessage);
     }
-
     useAppStore.getState().addMessage(newMessage);
     setMessage("");
   };
