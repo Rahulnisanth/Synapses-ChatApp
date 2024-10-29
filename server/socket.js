@@ -71,7 +71,7 @@ export const setUpSocket = (server) => {
 
     const channel = await Channel.findById(channelId).populate("members");
     const finalData = { ...messageData._doc, channelId: channel._id };
-    console.log(finalData);
+
     if (channel && channel.members) {
       channel.members.forEach((member) => {
         const memberSocketId = userSocketMap.get(member._id.toString());

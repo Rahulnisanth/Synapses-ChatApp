@@ -39,13 +39,14 @@ const MessageContainer = () => {
           setSelectedChatMessages(response.data.messages);
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
-    if (selectedChatData._id && selectedChatType === "contact") {
+
+    if (selectedChatData?._id && selectedChatType === "contact") {
       getMessages();
     }
-  }, [selectedChatType, selectedChatData, setSelectedChatMessages]);
+  }, [selectedChatData?._id, selectedChatType, setSelectedChatMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -89,35 +90,41 @@ const MessageContainer = () => {
             </div>
           )}
           {selectedChatType === "contact" && renderMessage(message)}
-          {selectedChatType === "channel" && renderChannelMessages(message)}
+          {selectedChatType === "channel" &&
+            message.sender._id &&
+            renderChannelMessages(message)}
         </div>
       );
     });
   };
 
   const renderMessage = (message) => {
-    console.log("Message container : ", message);
-    const isSentByUser = message.sender === selectedChatData._id;
+    const isSentByUser = message.sender._id === selectedChatData._id;
     return (
-      <div className={`${isSentByUser ? "text-left" : "text-right"}`}>
+      <div className={`${isSentByUser ? "text-right" : "text-left"}`}>
+        {/* Text Message */}
         {message.messageType === "text" && (
           <div
             className={`${
               isSentByUser
                 ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
                 : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            } border inline-block p-3 rounded-lg my-2 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)" }}
           >
             {message.content}
           </div>
         )}
+
+        {/* File Message */}
         {message.messageType === "file" && (
           <div
             className={`${
               isSentByUser
                 ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
                 : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            } border inline-block p-3 rounded-lg my-2 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)" }}
           >
             {checkImage(message.fileUrl) ? (
               <div
@@ -130,7 +137,7 @@ const MessageContainer = () => {
                 <img
                   src={`${HOST}/${message.fileUrl}`}
                   alt="File"
-                  className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain"
+                  className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain rounded-lg"
                 />
               </div>
             ) : (
@@ -151,7 +158,8 @@ const MessageContainer = () => {
             )}
           </div>
         )}
-        <div className="text-xs text-gray-500">
+        {/* Timestamp */}
+        <div className="text-xs text-gray-500 mt-1">
           {moment(message.timestamp).format("LT")}
         </div>
       </div>
@@ -159,91 +167,55 @@ const MessageContainer = () => {
   };
 
   const renderChannelMessages = (message) => {
-    console.log(message);
-    const isSentByUser = message.sender === userInfo.id;
     return (
-      <div className={`${isSentByUser ? "text-right" : "text-left"}`}>
+      <div
+        className={`${
+          message.sender._id === userInfo.id ? "text-right" : "text-left"
+        }`}
+      >
         {/* Text chat box */}
         {message.messageType === "text" && (
           <div
             className={`${
-              isSentByUser
+              message.sender._id === userInfo.id
                 ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
                 : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            } border inline-block p-3 rounded-lg my-2 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)" }}
           >
             {message.content}
           </div>
         )}
-        {/* {message.sender._id !== userInfo.id ? (
-          <div className="flex justify-end items-center gap-2">
-            <Avatar className="h-6 w-6 rounded-full overflow-hidden">
+        {/* Sender Info (for received messages) */}
+        {message.sender._id !== userInfo.id ? (
+          <div className="flex items-center gap-2 mt-1">
+            <Avatar className="h-8 w-8 rounded-full overflow-hidden">
               {message.sender.image ? (
                 <img
                   src={`${HOST}/${message.sender.image}`}
                   className="object-cover h-full w-full rounded-full"
-                  alt="message.sender avatar"
+                  alt="avatar"
                 />
               ) : (
-                <div className="uppercase text-lg font-bold h-6 w-6 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa] cursor-pointer">
+                <div className="uppercase text-sm font-bold h-8 w-8 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border border-[#ff006faa] cursor-pointer">
                   {message.sender.first_name
                     ? message.sender.first_name.slice(0, 2)
                     : message.sender.email.slice(0, 2)}
                 </div>
               )}
             </Avatar>
-            <span className="text-sm text-gray-500">{`${message.sender.first_name} ${message.sender.last_name}`}</span>
-            <span className="text-xs text-gray-500">
-              {moment(message.timestamp).format("LT")}
-            </span>
+            <div className="flex flex-col text-left">
+              <span className="text-sm font-semibold text-gray-600">
+                {`${message.sender.first_name} ${message.sender.last_name}`}
+              </span>
+              <span className="text-xs text-gray-500">
+                {moment(message.timestamp).format("LT")}
+              </span>
+            </div>
           </div>
         ) : (
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-500 mt-1">
             {moment(message.timestamp).format("LT")}
-          </div>
-        )} */}
-        {/* File chat box */}
-        {message.messageType === "file" && (
-          <div
-            className={`${
-              isSentByUser
-                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
-                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-            } border inline-block p-4 rounded my-1 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
-          >
-            {checkImage(message.fileUrl) ? (
-              <div
-                className="cursor-pointer"
-                onClick={() => {
-                  setImageModalOpen(true);
-                  setImageUrl(message.fileUrl);
-                }}
-              >
-                <img
-                  src={`${HOST}/${message.fileUrl}`}
-                  alt="File"
-                  className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain"
-                />
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-4">
-                <span className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3">
-                  <MdFolderZip />
-                </span>
-                <span className="truncate max-w-[50%] sm:max-w-[65%]">
-                  {message.fileUrl.split("/").slice(-1)[0]}
-                </span>
-                <span
-                  className="text-2xl sm:text-3xl cursor-pointer"
-                  onClick={() => handleDownload(message.fileUrl)}
-                >
-                  <MdOutlineDownloading />
-                </span>
-              </div>
-            )}
-            <div className="text-xs text-gray-500">
-              {moment(message.timestamp).format("LT")}
-            </div>
           </div>
         )}
       </div>

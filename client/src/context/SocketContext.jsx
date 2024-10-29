@@ -11,7 +11,7 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }) => {
-  const socket = useRef();
+  const socket = useRef(null);
   const { userInfo } = useAppStore();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const SocketProvider = ({ children }) => {
         const { selectedChatType, selectedChatData, addMessage } =
           useAppStore.getState();
         if (
-          selectedChatType !== undefined &&
+          selectedChatType &&
           (selectedChatData._id === message.sender._id ||
             selectedChatData._id === message.recipient._id)
         ) {
@@ -37,27 +37,33 @@ export const SocketProvider = ({ children }) => {
         const { selectedChatType, selectedChatData, addMessage } =
           useAppStore.getState();
         if (
-          selectedChatType !== undefined &&
+          selectedChatType &&
+          message.channelId &&
           selectedChatData._id === message.channelId
         ) {
           addMessage(message);
         }
       };
 
-      // receiving modules
+      // Set up event listeners for socket messages
       socket.current.on("receiveMessage", handleMessage);
       socket.current.on("receiveChannelMessage", handleChannelMessage);
-      //   connection module
+
+      // Connection status events
       socket.current.on("connect", () => {
         console.log("Connected to the socket server");
       });
-      //   error handling
       socket.current.on("connect_error", (error) => {
         console.error("Connection error: ", error);
       });
-      //   disconnection module
+
       return () => {
-        socket.current.disconnect();
+        if (socket.current) {
+          socket.current.off("receiveMessage", handleMessage);
+          socket.current.off("receiveChannelMessage", handleChannelMessage);
+          socket.current.disconnect();
+          socket.current = null;
+        }
       };
     }
   }, [userInfo]);

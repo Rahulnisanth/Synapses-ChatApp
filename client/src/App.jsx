@@ -11,13 +11,11 @@ import NotFound from "./pages/not-found";
 
 const PrivateRoute = ({ children }) => {
   const { userInfo } = useAppStore();
-  console.log("User Info in PrivateRoute:", userInfo);
   return userInfo ? children : <Navigate to="/auth" />;
 };
 
 const AuthRoute = ({ children }) => {
   const { userInfo } = useAppStore();
-  console.log("User Info in AuthRoute:", userInfo);
   return userInfo ? <Navigate to="/chat" /> : children;
 };
 
