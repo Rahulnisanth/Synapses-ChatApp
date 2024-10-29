@@ -167,23 +167,62 @@ const MessageContainer = () => {
   };
 
   const renderChannelMessages = (message) => {
+    const isSentByUser = message.sender._id === userInfo.id;
     return (
-      <div
-        className={`${
-          message.sender._id === userInfo.id ? "text-right" : "text-left"
-        }`}
-      >
+      <div className={`${isSentByUser ? "text-right" : "text-left"}`}>
         {/* Text chat box */}
         {message.messageType === "text" && (
           <div
             className={`${
-              message.sender._id === userInfo.id
+              isSentByUser
                 ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
                 : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
             } border inline-block p-3 rounded-lg my-2 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
             style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)" }}
           >
             {message.content}
+          </div>
+        )}
+        {/* File chat box */}
+        {message.messageType === "file" && (
+          <div
+            className={`${
+              isSentByUser
+                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/50"
+                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+            } border inline-block p-3 rounded-lg my-2 max-w-full sm:max-w-[85%] md:max-w-[70%] lg:max-w-[60%] break-words`}
+            style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)" }}
+          >
+            {checkImage(message.fileUrl) ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setImageModalOpen(true);
+                  setImageUrl(message.fileUrl);
+                }}
+              >
+                <img
+                  src={`${HOST}/${message.fileUrl}`}
+                  alt="File"
+                  className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain rounded-lg"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-white/80 text-2xl sm:text-3xl bg-black/20 rounded-full p-2 sm:p-3">
+                  <MdFolderZip />
+                </span>
+                <span className="truncate max-w-[50%] sm:max-w-[65%]">
+                  {message.fileUrl.split("/").slice(-1)[0]}
+                </span>
+                <span
+                  className="text-2xl sm:text-3xl cursor-pointer"
+                  onClick={() => handleDownload(message.fileUrl)}
+                >
+                  <MdOutlineDownloading />
+                </span>
+              </div>
+            )}
           </div>
         )}
         {/* Sender Info (for received messages) */}
@@ -214,6 +253,7 @@ const MessageContainer = () => {
             </div>
           </div>
         ) : (
+          // Timestamp for sent messages only
           <div className="text-xs text-gray-500 mt-1">
             {moment(message.timestamp).format("LT")}
           </div>
