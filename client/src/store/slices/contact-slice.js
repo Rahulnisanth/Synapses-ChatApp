@@ -1,4 +1,5 @@
 export const create_chat_slice = (set, get) => ({
+  // Single chat management =>
   selectedChatType: undefined,
   selectedChatData: undefined,
   selectedChatMessages: [],
@@ -16,6 +17,7 @@ export const create_chat_slice = (set, get) => ({
       selectedChatData: undefined,
       selectedChatMessages: [],
     }),
+  // New message adding management
   addMessage: (message) => {
     const selectedChatMessages = get().selectedChatMessages;
     const selectedChatType = get().selectedChatType;
@@ -36,6 +38,7 @@ export const create_chat_slice = (set, get) => ({
       ],
     });
   },
+  // File uploading & downloading management
   isUploading: false,
   isDownloading: false,
   fileUploadProgress: 0,
@@ -45,6 +48,7 @@ export const create_chat_slice = (set, get) => ({
   setFileUploadProgress: (fileUploadProgress) => set({ fileUploadProgress }),
   setFileDownloadProgress: (fileDownloadProgress) =>
     set({ fileDownloadProgress }),
+  // Channel management
   channels: [],
   setChannels: (channels) => set({ channels }),
   addChannels: (channel) => {
@@ -61,5 +65,17 @@ export const create_chat_slice = (set, get) => ({
       channels.splice(index, 1);
       channels.unshift(data);
     }
+  },
+  // Notifications management =>
+  notificationChats: [],
+  addNotification: (chatId) => {
+    const { notificationChats } = get();
+    if (!notificationChats.includes(chatId)) {
+      set({ notificationChats: [...notificationChats, chatId] });
+    }
+  },
+  removeNotification: (chatId) => {
+    const { notificationChats } = get();
+    set({ notificationChats: notificationChats.filter((id) => id !== chatId) });
   },
 });

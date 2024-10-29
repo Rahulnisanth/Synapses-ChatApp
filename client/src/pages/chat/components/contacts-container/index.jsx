@@ -10,7 +10,15 @@ import ContactList from "@/components/ContactList";
 import CreateChannel from "./components/create-channel";
 
 const ContactsContainer = () => {
-  const { dmList, setDmList, setChannels, channels } = useAppStore();
+  const {
+    dmList,
+    setDmList,
+    setChannels,
+    channels,
+    notificationChats,
+    removeNotification,
+  } = useAppStore();
+
   useEffect(() => {
     try {
       const getDMList = async () => {
@@ -54,7 +62,11 @@ const ContactsContainer = () => {
           <NewContacts />
         </div>
         <div className="max-h-[48vh] overflow-y-auto scrollbar-hidden">
-          <ContactList contacts={dmList} />
+          <ContactList
+            contacts={dmList}
+            notificationChats={notificationChats}
+            onChatSelect={(chatId) => removeNotification(chatId)}
+          />
         </div>
       </div>
       <div className="my-5">
@@ -63,7 +75,12 @@ const ContactsContainer = () => {
           <CreateChannel />
         </div>
         <div className="max-h-[48vh] overflow-y-auto scrollbar-hidden">
-          <ContactList contacts={channels} isChannel />
+          <ContactList
+            contacts={channels}
+            isChannel
+            notificationChats={notificationChats}
+            onChatSelect={(channelId) => removeNotification(channelId)}
+          />
         </div>
       </div>
       <ProfileInfo />

@@ -22,14 +22,20 @@ export const SocketProvider = ({ children }) => {
       });
 
       const handleMessage = (message) => {
-        const { selectedChatType, selectedChatData, addMessage } =
-          useAppStore.getState();
+        const {
+          selectedChatType,
+          selectedChatData,
+          addMessage,
+          addNotification,
+        } = useAppStore.getState();
         if (
           selectedChatType &&
           (selectedChatData._id === message.sender._id ||
             selectedChatData._id === message.recipient._id)
         ) {
           addMessage(message);
+        } else {
+          addNotification(message.sender._id || message.recipient._id);
         }
       };
 
@@ -39,6 +45,7 @@ export const SocketProvider = ({ children }) => {
           selectedChatData,
           addMessage,
           addChannelForward,
+          addNotification,
         } = useAppStore.getState();
         if (
           selectedChatType &&
@@ -46,6 +53,8 @@ export const SocketProvider = ({ children }) => {
           selectedChatData._id === message.channelId
         ) {
           addMessage(message);
+        } else {
+          addNotification(message.channelId);
         }
         addChannelForward(message);
       };
