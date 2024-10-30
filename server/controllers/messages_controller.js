@@ -18,7 +18,7 @@ export const getMessages = async (request, response, next) => {
     }).sort({ timestamp: 1 });
     return response.status(200).json({ messages });
   } catch (err) {
-    console.error("Error occurred during contact search", err);
+    console.error("Error occurred in getting messages", err);
     return response.status(500).send("Internal server error!");
   }
 };
@@ -36,7 +36,7 @@ export const addFiles = async (request, response, next) => {
     renameSync(request.file.path, fileName);
     return response.status(200).json({ filePath: fileName });
   } catch (err) {
-    console.error("Error occurred during contact search", err);
+    console.error("Error occurred in adding files", err);
     return response.status(500).send("Internal server error!");
   }
 };

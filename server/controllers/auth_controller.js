@@ -172,7 +172,7 @@ export const deleteProfileImage = async (request, response) => {
     user.save();
     return response.status(200).send("Profile image deleted successfully.");
   } catch (err) {
-    console.error("Error occurred during updateUserInfo function", err);
+    console.error("Error occurred during deleting profile image function", err);
     return response.status(500).send("Internal server error!");
   }
 };
@@ -187,7 +187,7 @@ export const logout = async (request, response) => {
     });
     return response.status(200).send("User logged out successfully.");
   } catch (err) {
-    console.error("Error occurred during signup", err);
+    console.error("Error occurred during logout", err);
     return response.status(500).send("Internal server error!");
   }
 };

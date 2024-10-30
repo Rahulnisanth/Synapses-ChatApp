@@ -8,6 +8,7 @@ import { api_client } from "./lib/api-client";
 import { USER_INFO_ROUTE } from "./utils/constants";
 import Hero from "./pages/hero";
 import NotFound from "./pages/not-found";
+import { ScaleLoader } from "react-spinners";
 
 const PrivateRoute = ({ children }) => {
   const { userInfo } = useAppStore();
@@ -38,19 +39,23 @@ function App() {
         console.error("Error fetching user info:", err);
         setUserInfo(undefined);
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 3000);
       }
     };
 
     if (!userInfo) {
       getUserData();
     } else {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 3000);
     }
   }, [userInfo, setUserInfo]);
 
   if (loading) {
-    return;
+    return (
+      <div className="flex bg-[#1c1d25] items-center justify-center h-screen">
+        <ScaleLoader color="#6b46c1" size={250} />
+      </div>
+    );
   }
 
   return (

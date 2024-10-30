@@ -21,7 +21,7 @@ export const createChannel = async (request, response, next) => {
     await newChannel.save();
     return response.status(200).json({ channel: newChannel });
   } catch (err) {
-    console.error("Error occurred during contact search", err);
+    console.error("Error occurred during creating channel", err);
     return response.status(500).send("Internal server error!");
   }
 };
@@ -37,7 +37,7 @@ export const getUserChannels = async (request, response, next) => {
     }
     return response.status(200).json({ channels });
   } catch (err) {
-    console.error("Error occurred during contact search", err);
+    console.error("Error occurred in getting user channels", err);
     return response.status(500).send("Internal server error!");
   }
 };
@@ -56,7 +56,7 @@ export const getChannelMessages = async (request, response, next) => {
     const messages = channel.messages;
     return response.status(200).json({ messages });
   } catch (e) {
-    console.log("Error occurred during getting channels", e);
+    console.log("Error occurred in getting channel messages", e);
     return response.status(500).send("Internal server error");
   }
 };

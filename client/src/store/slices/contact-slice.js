@@ -66,7 +66,7 @@ export const create_chat_slice = (set, get) => ({
       channels.unshift(data);
     }
   },
-  // Notifications management =>
+  // Notifications management
   notificationChats: [],
   addNotification: (chatId) => {
     const { notificationChats } = get();

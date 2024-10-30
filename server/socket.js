@@ -33,7 +33,6 @@ export const setUpSocket = (server) => {
         .populate("sender", "id email first_name last_name image")
         .populate("recipient", "id email first_name last_name image");
 
-      // Emit the message to the recipient and sender as before
       if (recipientSocketId) {
         io.to(recipientSocketId).emit("receiveMessage", messageData);
       }

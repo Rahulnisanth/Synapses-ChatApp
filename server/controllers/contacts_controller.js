@@ -77,7 +77,7 @@ export const getDMList = async (request, response, next) => {
     ]);
     return response.status(200).json({ contacts });
   } catch (err) {
-    console.error("Error occurred during contact search", err);
+    console.error("Error occurred in getting DM list", err);
     return response.status(500).send("Internal server error!");
   }
 };
@@ -98,7 +98,7 @@ export const getAllContacts = async (request, response, next) => {
     }));
     return response.status(200).json({ contacts });
   } catch (err) {
-    console.error("Error occurred during contact search", err);
+    console.error("Error occurred in getting all contacts", err);
     return response.status(500).send("Internal server error!");
   }
 };
