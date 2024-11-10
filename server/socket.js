@@ -5,7 +5,7 @@ import { Server } from "socket.io";
 export const setUpSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.ORIGIN,
+      origin: process.env.CORS_ORIGIN,
       methods: ["GET", "POST"],
       credentials: true,
     },
