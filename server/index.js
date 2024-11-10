@@ -17,17 +17,22 @@ const database_url = process.env.DATABASE_URL;
 
 app.use(
   cors({
-    origin: [
-      "https://synapses-chat-app.vercel.app",
-      "http://localhost:3000",
-      "http://localhost:5173",
-    ],
-    methods: ["POST", "PUT", "GET", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization", "x-auth-token"],
-    credentials: true,
-    optionsSuccessStatus: 200,
+    origin: "https://synapses-chat-app.vercel.app",
   })
 );
+
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://synapses-chat-app.vercel.app"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allow specific methods
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  ); // Allow specific headers
+  next();
+});
 
 // Handle preflight requests
 app.options("*", cors());
