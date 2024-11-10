@@ -1,6 +1,6 @@
 # Synapses Chat App - v1
 
-Status: In progress
+Status: Completed
 
 Tags: Express, MongoDB, NodeJS, React and Socket-io.
 
