@@ -1,7 +1,7 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user_model.js";
 import jwt from "jsonwebtoken";
-import { renameSync, unlinkSync } from "fs";
+import { deleteFromCloudinary, uploadToCloudinary } from "../cloudinary.js";
 
 const max_timer = 3 * 24 * 1000 * 1000;
 

@@ -1,5 +1,5 @@
 import { Message } from "../models/message_model.js";
-import { mkdirSync, renameSync } from "fs";
+import { uploadToCloudinary } from "../cloudinary.js";
 
 // Search contacts controller:
 export const getMessages = async (request, response, next) => {
