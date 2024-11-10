@@ -24,8 +24,11 @@ const user_schema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: false,
-    default: "",
+    default: null,
+  },
+  public_id: {
+    type: String,
+    default: null,
   },
   profile_setup: {
     type: Boolean,

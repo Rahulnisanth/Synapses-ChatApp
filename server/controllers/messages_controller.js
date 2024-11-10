@@ -27,14 +27,16 @@ export const getMessages = async (request, response, next) => {
 export const addFiles = async (request, response, next) => {
   try {
     if (!request.file) {
-      return response.status(400).message("File is required");
+      return response.status(400).json({ message: "File is required" });
     }
+
     const date = Date.now().toString();
-    let fileDir = `uploads/files/${date}`;
-    let fileName = `${fileDir}/${request.file.originalname}`;
-    mkdirSync(fileDir, { recursive: true });
-    renameSync(request.file.path, fileName);
-    return response.status(200).json({ filePath: fileName });
+    const result = await uploadToCloudinary(request.file, `files/${date}`);
+
+    return response.status(200).json({
+      filePath: result.secure_url,
+      public_id: result.public_id,
+    });
   } catch (err) {
     console.error("Error occurred in adding files", err);
     return response.status(500).send("Internal server error!");

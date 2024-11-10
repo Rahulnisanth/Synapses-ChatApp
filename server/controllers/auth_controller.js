@@ -132,20 +132,34 @@ export const updateUserInfo = async (request, response) => {
   }
 };
 
-// Add Profile Image :
+// Add Profile Image
 export const addProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
-    const date = Date.now().toString();
 
-    let fileName = "uploads/profiles/" + date + request.file.originalname;
-    renameSync(request.file.path, fileName);
+    if (!request.file) {
+      return response.status(400).json({ message: "File is required" });
+    }
 
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(request.file, "profiles");
+
+    // If user already has an image, delete the old one
+    const currentUser = await User.findById(user_id);
+    if (currentUser.image && currentUser.public_id) {
+      await deleteFromCloudinary(currentUser.public_id);
+    }
+
+    // Update user with new image URL
     const updatedUserData = await User.findByIdAndUpdate(
       user_id,
-      { image: fileName },
+      {
+        image: result.secure_url,
+        public_id: result.public_id, // Store Cloudinary public_id for future deletion
+      },
       { new: true, runValidators: true }
     );
+
     return response.status(200).json({
       image: updatedUserData.image,
     });
@@ -155,33 +169,28 @@ export const addProfileImage = async (request, response) => {
   }
 };
 
-// Delete Profile Image :
+// Delete Profile Image
 export const deleteProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
     const user = await User.findById(user_id);
+
     if (!user) {
       return response.status(404).send("User not found");
     }
-    unlinkSync(user.image);
+
+    if (user.public_id) {
+      // Delete from Cloudinary
+      await deleteFromCloudinary(user.public_id);
+    }
+    // Update user document
     user.image = null;
-    user.save();
+    user.public_id = null;
+    await user.save();
+
     return response.status(200).send("Profile image deleted successfully.");
   } catch (err) {
     console.error("Error occurred during deleting profile image function", err);
-    return response.status(500).send("Internal server error!");
-  }
-};
-
-// Logout controller:
-export const logout = async (request, response) => {
-  try {
-    response.cookie("jwt", "", {
-      maxAge: 1,
-    });
-    return response.status(200).send("User logged out successfully.");
-  } catch (err) {
-    console.error("Error occurred during logout", err);
     return response.status(500).send("Internal server error!");
   }
 };

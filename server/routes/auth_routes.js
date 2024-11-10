@@ -1,5 +1,4 @@
 import { Router } from "express";
-import multer from "multer";
 import {
   login,
   signup,
@@ -10,9 +9,9 @@ import {
   logout,
 } from "../controllers/auth_controller.js";
 import { verifyToken } from "../middleware/auth_middleware.js";
+import upload from "../multer.js";
 
 const auth_route = Router();
-const upload = multer({ dest: "uploads/profiles/" });
 
 auth_route.post("/signup", signup);
 auth_route.post("/login", login);
