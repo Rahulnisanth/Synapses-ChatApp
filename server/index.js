@@ -18,6 +18,7 @@ const database_url = process.env.DATABASE_URL;
 app.use(
   cors({
     origin: "https://synapses-chat-app.vercel.app",
+    credentials: true,
   })
 );
 
