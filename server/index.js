@@ -30,7 +30,6 @@ app.use("/uploads/files", express.static("uploads/files"));
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("/", console.log("Hello world!"));
 // Auth routes
 app.use("/api/auth", auth_route);
 // Contact routes
@@ -41,7 +40,7 @@ app.use("/api/message", message_route);
 app.use("/api/channel", channel_route);
 
 const server = app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}/`);
+  console.log(`Server is running at the port: ${port} `);
 });
 
 setUpSocket(server);
