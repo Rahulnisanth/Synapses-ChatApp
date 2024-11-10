@@ -30,6 +30,7 @@ app.use("/uploads/files", express.static("uploads/files"));
 app.use(cookieParser());
 app.use(express.json());
 
+app.use("/", console.log("Hello world!"));
 // Auth routes
 app.use("/api/auth", auth_route);
 // Contact routes
