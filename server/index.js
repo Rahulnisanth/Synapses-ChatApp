@@ -10,8 +10,8 @@ import message_route from "./routes/message_routes.js";
 import channel_route from "./routes/channel_routes.js";
 
 dotenv.config();
-
 const app = express();
+
 const port = process.env.PORT || 3001;
 const database_url = process.env.DATABASE_URL;
 
