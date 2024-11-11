@@ -38,7 +38,7 @@ const ProfileInfo = () => {
           <Avatar className="h-8 w-8 rounded-full overflow-hidden">
             {userInfo.image ? (
               <img
-                src={`${HOST}/${userInfo.image}`}
+                src={`${userInfo.image}`}
                 className="object-cover h-full w-full rounded-full"
               />
             ) : (

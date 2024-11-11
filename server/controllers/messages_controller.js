@@ -23,22 +23,25 @@ export const getMessages = async (request, response, next) => {
   }
 };
 
-// Upload files controller
+// Updated addFiles Controller with additional debugging
 export const addFiles = async (request, response, next) => {
   try {
+    console.log("File in request:", request.file);
     if (!request.file) {
+      console.log("No file found in the request");
       return response.status(400).json({ message: "File is required" });
     }
-
     const date = Date.now().toString();
+
     const result = await uploadToCloudinary(request.file, `files/${date}`);
+    console.log("File uploaded to Cloudinary:", result);
 
     return response.status(200).json({
       filePath: result.secure_url,
       public_id: result.public_id,
     });
   } catch (err) {
-    console.error("Error occurred in adding files", err);
+    console.error("Error occurred in adding files:", err);
     return response.status(500).send("Internal server error!");
   }
 };

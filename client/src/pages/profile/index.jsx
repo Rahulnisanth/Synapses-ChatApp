@@ -1,14 +1,12 @@
 import { useAppStore } from "@/store";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// UIs :
 import { Avatar } from "@/components/ui/avatar";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { BsArrowUpLeftSquareFill } from "react-icons/bs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-// Server components :
 import { api_client } from "@/lib/api-client";
 import {
   UPDATE_USER_INFO_ROUTE,
@@ -24,13 +22,14 @@ const Profile = () => {
   const [lastName, setLastName] = useState(userInfo.last_name || "");
   const [image, setImage] = useState(null);
   const [hovered, setHovered] = useState(false);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleNavigate = () => {
     if (userInfo.profile_setup) {
       navigate("/chat");
     } else {
-      toast.error("Please setup the profile to continue.");
+      toast.error("Please set up the profile to continue.");
     }
   };
 
@@ -44,22 +43,23 @@ const Profile = () => {
 
   const saveChanges = async () => {
     if (validateProfile()) {
+      setLoading(true);
       try {
         const response = await api_client.post(
           UPDATE_USER_INFO_ROUTE,
-          {
-            first_name: firstName,
-            last_name: lastName,
-          },
+          { first_name: firstName, last_name: lastName },
           { withCredentials: true }
         );
         if (response.status === 200 && response.data) {
           setUserInfo({ ...response.data });
-          toast.success("Profile is updated successfully.");
+          toast.success("Profile updated successfully.");
           navigate("/chat");
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
+        toast.error("Failed to save changes. Please try again.");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -71,24 +71,39 @@ const Profile = () => {
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Preview the image immediately
+      const reader = new FileReader();
+      reader.onload = () => setImage(reader.result);
+      reader.readAsDataURL(file);
+
+      // Upload the image to the server
       const formData = new FormData();
       formData.append("profile-image", file);
-      const response = await api_client.post(
-        ADD_PROFILE_IMAGE_ROUTE,
-        formData,
-        { withCredentials: true }
-      );
 
-      if (response.status === 200 && response.data.image) {
-        setUserInfo({ ...userInfo, image: response.data.image });
-        toast.success("Profile image added successfully.");
+      // Log each entry in formData to verify contents
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
       }
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const response = await api_client.post(
+          ADD_PROFILE_IMAGE_ROUTE,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200 && response.data.image) {
+          setUserInfo({ ...userInfo, image: response.data.image });
+          toast.success("Profile image added successfully.");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to upload profile image.");
+      }
     }
   };
 
@@ -99,17 +114,18 @@ const Profile = () => {
       });
       if (response.status === 200) {
         setUserInfo({ ...userInfo, image: null });
-        toast.success("Profile image deleted successfully.");
         setImage(null);
+        toast.success("Profile image deleted successfully.");
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      toast.error("Failed to delete profile image.");
     }
   };
 
   useEffect(() => {
     if (userInfo.image) {
-      setImage(`${HOST}/${userInfo.image}`);
+      setImage(`${userInfo.image}`);
     }
   }, [userInfo]);
 
@@ -120,24 +136,24 @@ const Profile = () => {
           <BsArrowUpLeftSquareFill
             onClick={handleNavigate}
             className="text-4xl lg:text-6xl text-white/90 cursor-pointer"
+            aria-label="Back to chat"
           />
         </div>
         <div className="grid grid-cols-2 justify-center items-center">
-          <div className="h-32 w-32 md:w-48 md:h-48 relative flex items-center justify-center cursor-pointer">
+          <div
+            className="h-32 w-32 md:w-48 md:h-48 relative flex items-center justify-center cursor-pointer"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
             <Avatar className="h-32 w-32 md:h-48 md:w-48 rounded-full overflow-hidden">
               {image ? (
                 <img
                   src={image}
+                  alt="Profile"
                   className="object-cover h-full w-full rounded-full"
-                  onMouseEnter={() => setHovered(true)}
-                  onMouseLeave={() => setHovered(false)}
                 />
               ) : (
-                <div
-                  className="uppercase text-5xl font-bold h-32 w-32 md:h-48 md:w-48 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa]"
-                  onMouseEnter={() => setHovered(true)}
-                  onMouseLeave={() => setHovered(false)}
-                >
+                <div className="uppercase text-5xl font-bold h-32 w-32 md:h-48 md:w-48 rounded-full flex justify-center items-center bg-[#712a4c57] text-[#ff006e] border-[1px] border-[#ff006faa]">
                   {firstName
                     ? firstName.slice(0, 2)
                     : userInfo.email.slice(0, 2)}
@@ -145,13 +161,13 @@ const Profile = () => {
               )}
             </Avatar>
 
-            {/* Overlay on hover */}
             {hovered && (
               <div
                 className="absolute inset-0 flex bg-black/50 border-[1px] border-white justify-center items-center rounded-full cursor-pointer"
                 onClick={image ? handleImageDelete : handleFileInputClick}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
+                aria-label={
+                  image ? "Delete Profile Image" : "Add Profile Image"
+                }
               >
                 {image ? (
                   <FaTrash className="text-white text-3xl" />
@@ -161,7 +177,6 @@ const Profile = () => {
               </div>
             )}
 
-            {/* Hidden file input */}
             <input
               type="file"
               className="hidden"
@@ -204,10 +219,13 @@ const Profile = () => {
         </div>
         <div className="w-full">
           <Button
-            className="h-16 w-full text-white bg-purple-700 hover:bg-purple-900 transition-all duration-300"
+            className={`h-16 w-full text-white bg-purple-700 hover:bg-purple-900 transition-all duration-300 ${
+              loading && "opacity-50 cursor-not-allowed"
+            }`}
             onClick={saveChanges}
+            disabled={loading}
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>

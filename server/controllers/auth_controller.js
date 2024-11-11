@@ -22,6 +22,8 @@ export const signup = async (request, response) => {
 
     response.cookie("jwt", createToken(email, user._id), {
       maxAge: max_timer * 1000,
+      sameSite: "Lax",
+      secure: false,
     });
 
     return response.status(201).json({
@@ -52,6 +54,8 @@ export const login = async (request, response) => {
 
     response.cookie("jwt", createToken(email, user._id), {
       maxAge: max_timer * 1000,
+      sameSite: "Lax",
+      secure: false,
     });
 
     return response.status(200).json({
@@ -132,7 +136,6 @@ export const updateUserInfo = async (request, response) => {
   }
 };
 
-// Add Profile Image
 export const addProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
@@ -141,35 +144,29 @@ export const addProfileImage = async (request, response) => {
       return response.status(400).json({ message: "File is required" });
     }
 
-    // Upload to Cloudinary
     const result = await uploadToCloudinary(request.file, "profiles");
 
-    // If user already has an image, delete the old one
     const currentUser = await User.findById(user_id);
-    if (currentUser.image && currentUser.public_id) {
-      await deleteFromCloudinary(currentUser.public_id);
+    if (currentUser?.image && currentUser.public_id) {
+      await deleteFromCloudinary(currentUser.public_id).catch((err) => {
+        console.warn("Old image deletion failed:", err);
+      });
     }
 
-    // Update user with new image URL
-    const updatedUserData = await User.findByIdAndUpdate(
-      user_id,
-      {
-        image: result.secure_url,
-        public_id: result.public_id, // Store Cloudinary public_id for future deletion
-      },
-      { new: true, runValidators: true }
-    );
+    currentUser.image = result.secure_url;
+    currentUser.public_id = result.public_id;
+    await currentUser.save();
 
     return response.status(200).json({
-      image: updatedUserData.image,
+      image: currentUser.image,
+      message: "Profile image updated successfully",
     });
   } catch (err) {
-    console.error("Error occurred during updateUserInfo function", err);
+    console.error("Error occurred during addProfileImage", err);
     return response.status(500).send("Internal server error!");
   }
 };
 
-// Delete Profile Image
 export const deleteProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
@@ -179,18 +176,23 @@ export const deleteProfileImage = async (request, response) => {
       return response.status(404).send("User not found");
     }
 
+    // Delete from Cloudinary if public_id exists
     if (user.public_id) {
-      // Delete from Cloudinary
-      await deleteFromCloudinary(user.public_id);
+      await deleteFromCloudinary(user.public_id).catch((err) => {
+        console.warn("Image deletion failed:", err);
+      });
     }
-    // Update user document
+
+    // Update user document to remove image references
     user.image = null;
     user.public_id = null;
     await user.save();
 
-    return response.status(200).send("Profile image deleted successfully.");
+    return response.status(200).json({
+      message: "Profile image deleted successfully.",
+    });
   } catch (err) {
-    console.error("Error occurred during deleting profile image function", err);
+    console.error("Error occurred during deleteProfileImage", err);
     return response.status(500).send("Internal server error!");
   }
 };
@@ -200,6 +202,8 @@ export const logout = async (request, response) => {
   try {
     response.cookie("jwt", "", {
       maxAge: 1,
+      sameSite: "Lax",
+      secure: false,
     });
     return response.status(200).send("User logged out successfully.");
   } catch (err) {

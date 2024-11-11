@@ -73,26 +73,39 @@ const MessageContainer = () => {
     }
   }, [selectedChatMessages]);
 
+  // TODO: To fix the download error for PDFs, and other doc files
   const handleDownload = async (fileUrl) => {
     setIsDownloading(true);
     setFileDownloadProgress(0);
-    const response = await api_client.get(`${HOST}/${fileUrl}`, {
-      responseType: "blob",
-      onDownloadProgress: (event) => {
-        const { loaded, total } = event;
-        setFileDownloadProgress(Math.round((100 * loaded) / total));
-      },
-    });
-    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = urlBlob;
-    link.setAttribute("download", fileUrl.split("/").pop());
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(urlBlob);
-    setIsDownloading(false);
-    setFileDownloadProgress(0);
+
+    try {
+      const response = await api_client.get(fileUrl, {
+        withCredentials: false,
+        responseType: "blob",
+        onDownloadProgress: (event) => {
+          const { loaded, total } = event;
+          setFileDownloadProgress(Math.round((100 * loaded) / total));
+        },
+      });
+      console.log("Response data => ", response.data);
+
+      const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = urlBlob;
+      link.setAttribute("download", fileUrl.split("/").pop());
+      document.body.appendChild(link);
+
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(urlBlob);
+    } catch (error) {
+      console.error("Download failed:", error);
+      alert("Error occurred while downloading the file.");
+    } finally {
+      setIsDownloading(false);
+      setFileDownloadProgress(0);
+    }
   };
 
   const renderMessages = () => {
@@ -154,7 +167,7 @@ const MessageContainer = () => {
                 }}
               >
                 <img
-                  src={`${HOST}/${message.fileUrl}`}
+                  src={`${message.fileUrl}`}
                   alt="File"
                   className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain rounded-lg"
                 />
@@ -221,7 +234,7 @@ const MessageContainer = () => {
                 }}
               >
                 <img
-                  src={`${HOST}/${message.fileUrl}`}
+                  src={`${message.fileUrl}`}
                   alt="File"
                   className="max-w-full h-auto sm:max-h-[200px] md:max-h-[300px] object-contain rounded-lg"
                 />
@@ -250,7 +263,7 @@ const MessageContainer = () => {
             <Avatar className="h-7 w-7 rounded-full overflow-hidden">
               {message.sender.image ? (
                 <img
-                  src={`${HOST}/${message.sender.image}`}
+                  src={`${message.sender.image}`}
                   className="object-cover h-full w-full rounded-full"
                   alt="avatar"
                 />
@@ -289,7 +302,7 @@ const MessageContainer = () => {
           <div className="flex w-[90%] md:w-full flex-col justify-center items-center">
             <div>
               <img
-                src={`${HOST}/${imageUrl}`}
+                src={`${imageUrl}`}
                 className="max-h-[80vh] max-w-full object-contain"
               />
             </div>

@@ -23,16 +23,22 @@ const MessageBar = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
   useEffect(() => {
-    function handleEmojiPickerClose(event) {
+    const handleEmojiPickerClose = (event) => {
       if (emojiRef.current && !emojiRef.current.contains(event.target)) {
         setEmojiPickerOpen(false);
       }
+    };
+
+    if (emojiPickerOpen) {
+      document.addEventListener("mousedown", handleEmojiPickerClose);
+    } else {
+      document.removeEventListener("mousedown", handleEmojiPickerClose);
     }
-    document.addEventListener("mousedown", handleEmojiPickerClose);
+
     return () => {
       document.removeEventListener("mousedown", handleEmojiPickerClose);
     };
-  }, [emojiRef]);
+  }, [emojiPickerOpen]);
 
   const handleEmoji = (emoji) => {
     setMessage((message) => message + emoji.emoji);
@@ -91,6 +97,7 @@ const MessageBar = () => {
               timestamp: new Date(),
             };
             socket.emit("sendMessage", newMessage);
+            useAppStore.getState().addMessage(newMessage);
           } else if (selectedChatType === "channel") {
             const newMessage = {
               sender: userInfo.id,
@@ -101,6 +108,7 @@ const MessageBar = () => {
               timestamp: new Date(),
             };
             socket.emit("sendChannelMessage", newMessage);
+            useAppStore.getState().addMessage(newMessage);
           }
         }
       }
@@ -147,7 +155,10 @@ const MessageBar = () => {
           >
             <RiEmojiStickerLine className="text-xl sm:text-2xl" />
           </button>
-          <div className="absolute bottom-16 right-0" ref={emojiRef}>
+          <div
+            className="absolute bottom-16 -right-12 md:bottom-16 md:right-0"
+            ref={emojiRef}
+          >
             <EmojiPicker
               theme="dark"
               open={emojiPickerOpen}

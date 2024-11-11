@@ -101,7 +101,7 @@ const NewContacts = () => {
                       <Avatar className="h-10 w-10 rounded-full overflow-hidden">
                         {contact.image ? (
                           <img
-                            src={`${HOST}/${contact.image}`}
+                            src={`${contact.image}`}
                             className="object-cover h-full w-full rounded-full"
                             alt="contact avatar"
                           />

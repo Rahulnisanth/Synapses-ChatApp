@@ -10,6 +10,7 @@ import message_route from "./routes/message_routes.js";
 import channel_route from "./routes/channel_routes.js";
 
 dotenv.config();
+
 const app = express();
 
 const port = process.env.PORT || 3001;
@@ -17,26 +18,24 @@ const database_url = process.env.DATABASE_URL;
 
 app.use(
   cors({
-    origin: "https://synapses-chat-app.vercel.app",
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
-
+// cors definitions
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://synapses-chat-app.vercel.app"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allow specific methods
+  res.header("Access-Control-Allow-Origin", process.env.CORS_ORIGIN);
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
-  ); // Allow specific headers
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
-
 // Handle preflight requests
 app.options("*", cors());
+
 app.use("/uploads/profiles", express.static("uploads/profiles"));
 app.use("/uploads/files", express.static("uploads/files"));
 
