@@ -22,10 +22,10 @@ import {
 import { useAppStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import MultipleSelector from "@/components/ui/multipleselect";
+import { toast } from "sonner";
 
 const CreateChannel = () => {
-  const { setSelectedChatType, setSelectedChatData, addChannels } =
-    useAppStore();
+  const { addChannels } = useAppStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [allContacts, setAllContacts] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState([]);
@@ -64,6 +64,8 @@ const CreateChannel = () => {
           setModalOpen(false);
           addChannels(response.data.channel);
         }
+      } else {
+        toast.error("Members in the channel must be more than 2");
       }
     } catch (err) {
       console.log(err);

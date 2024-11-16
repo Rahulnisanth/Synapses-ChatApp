@@ -29,3 +29,15 @@ export const uploadToCloudinary = async (file, folder) => {
 export const deleteFromCloudinary = async (publicId) => {
   return cloudinary.uploader.destroy(publicId);
 };
+
+// Generate a signed URL for private/authenticated files
+export const generateSignedUrl = (publicId, resourceType = "raw") => {
+  const options = {
+    resource_type: resourceType, // 'image' for images, 'raw' for other files like PDFs
+    type: "authenticated", // Use 'private' if your files are private
+    sign_url: true,
+  };
+
+  const signedUrl = cloudinary.url(publicId, options);
+  return signedUrl;
+};

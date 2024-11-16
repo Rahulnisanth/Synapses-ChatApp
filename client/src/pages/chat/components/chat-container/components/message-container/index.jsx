@@ -75,29 +75,39 @@ const MessageContainer = () => {
 
   // TODO: To fix the download error for PDFs, and other doc files
   const handleDownload = async (fileUrl) => {
+    const publicIdList = fileUrl.split("/").slice(-3); // ['files', '1731744755045', 'sgmtqhmtloekvhxwb0kd.pdf']
+    const publicId = publicIdList.join("/");
+    console.log(publicId);
     setIsDownloading(true);
     setFileDownloadProgress(0);
 
     try {
-      const response = await api_client.get(fileUrl, {
-        withCredentials: false,
+      // Request signed URL from backend
+      const { data } = await api_client.get(`/generate-signed-url/${publicId}`);
+      const signedUrl = data.signedUrl;
+      console.log("Signed URL => ", signedUrl);
+
+      // Fetch the file from the signed URL
+      const response = await api_client.get(signedUrl, {
         responseType: "blob",
         onDownloadProgress: (event) => {
-          const { loaded, total } = event;
-          setFileDownloadProgress(Math.round((100 * loaded) / total));
+          if (event.lengthComputable) {
+            const { loaded, total } = event;
+            setFileDownloadProgress(Math.round((100 * loaded) / total));
+          }
         },
       });
-      console.log("Response data => ", response.data);
 
-      const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+      const urlBlob = window.URL.createObjectURL(response.data);
 
+      // Create download link
       const link = document.createElement("a");
       link.href = urlBlob;
-      link.setAttribute("download", fileUrl.split("/").pop());
+      link.download = publicId.split("/").pop() || "download";
       document.body.appendChild(link);
 
       link.click();
-      link.remove();
+      document.body.removeChild(link);
       window.URL.revokeObjectURL(urlBlob);
     } catch (error) {
       console.error("Download failed:", error);
