@@ -1,6 +1,6 @@
 // Lottie :
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationSource from "@/assets/lottie_animation.json";
+import animationSource from "@/assets/animations/circular_animation.json";
 
 const EmptyChatContainer = () => {
   return (

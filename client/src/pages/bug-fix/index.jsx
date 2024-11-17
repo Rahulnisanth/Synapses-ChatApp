@@ -1,6 +1,6 @@
 import React from "react";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationFile from "@/assets/debugging.json";
+import animationFile from "@/assets/animations/debugging_animation.json";
 
 const BugFix = () => {
   return (

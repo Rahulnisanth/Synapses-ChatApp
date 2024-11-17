@@ -15,7 +15,7 @@ import {
 import { LuUserPlus2 } from "react-icons/lu";
 import { Input } from "@/components/ui/input";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationSource from "@/assets/search-animation.json";
+import animationSource from "@/assets/animations/search_animation.json";
 import { api_client } from "@/lib/api-client";
 import { SEARCH_CONTACT_ROUTE } from "@/utils/constants";
 import { ScrollArea } from "@/components/ui/scroll-area";

@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationFile from "@/assets/404-Not-Found-Animation.json";
+import animationFile from "@/assets/animations/404_animation.json";
 
 const NotFound = () => {
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ import ChatContainer from "./components/chat-container";
 import ContactsContainer from "./components/contacts-container";
 import EmptyChatContainer from "./components/empty-chat-container";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationSource from "@/assets/lottie_animation.json";
+import animationSource from "@/assets/animations/circular_animation.json";
 
 const Chat = () => {
   const {

@@ -1,6 +1,6 @@
 import Emoji from "@/assets/victory.svg";
 import Abstract from "@/assets/login2.png";
-import animationSource from "@/assets/lottie_animation.json";
+import animationSource from "@/assets/animations/circular_animation.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

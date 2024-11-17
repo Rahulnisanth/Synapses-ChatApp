@@ -1,6 +1,6 @@
 import React from "react";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationSource from "@/assets/lottie_animation.json";
+import animationSource from "@/assets/animations/circular_animation.json";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
