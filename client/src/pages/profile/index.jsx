@@ -11,7 +11,6 @@ import { api_client } from "@/lib/api-client";
 import {
   UPDATE_USER_INFO_ROUTE,
   ADD_PROFILE_IMAGE_ROUTE,
-  HOST,
   DELETE_PROFILE_IMAGE_ROUTE,
 } from "@/utils/constants";
 

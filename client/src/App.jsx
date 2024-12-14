@@ -9,7 +9,6 @@ import { USER_INFO_ROUTE } from "./utils/constants";
 import Hero from "./pages/hero";
 import NotFound from "./pages/not-found";
 import { ScaleLoader } from "react-spinners";
-import BugFix from "./pages/bug-fix";
 
 const PrivateRoute = ({ children }) => {
   const { userInfo } = useAppStore();
@@ -62,7 +61,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* TODO: Make site live after bug fix */}
         <Route
           path="/auth"
           element={
