@@ -46,8 +46,13 @@ const Auth = () => {
   };
 
   const validate_login = () => {
-    if (!email.length) {
+    if (!email.trim().length) {
       toast.error("Email is required.");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
       return false;
     }
     if (!password) {
@@ -59,19 +64,34 @@ const Auth = () => {
 
   const handle_login = async () => {
     if (validate_login()) {
-      const response = await api_client.post(
-        LOGIN_ROUTE,
-        { email, password },
-        { withCredentials: true }
-      );
-      if (response.status === 200) {
-        setUserInfo(response.data.user);
-        if (response.data.user.id) {
+      try {
+        const response = await api_client.post(
+          LOGIN_ROUTE,
+          { email: email.trim(), password },
+          { withCredentials: true }
+        );
+
+        if (response.status === 200) {
+          setUserInfo(response.data.user);
+          toast.success("Login successful!");
+
+          // Navigate based on user profile setup
           if (response.data.user.profile_setup) {
             navigate("/chat");
           } else {
             navigate("/profile");
           }
+        }
+      } catch (error) {
+        console.error("Login error:", error.response || error.message);
+
+        // Handle API errors
+        if (error.response && error.response.data) {
+          toast.error(
+            error.response.data.message || "Login failed. Please try again."
+          );
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
         }
       }
     }
