@@ -8,7 +8,6 @@ import contact_route from "./routes/contact_routes.js";
 import { setUpSocket } from "./socket.js";
 import message_route from "./routes/message_routes.js";
 import channel_route from "./routes/channel_routes.js";
-import download_file_router from "./routes/download_file_route.js";
 
 dotenv.config();
 
@@ -36,10 +35,6 @@ app.use((req, res, next) => {
 });
 // Handle preflight requests
 app.options("*", cors());
-
-app.use("/uploads/profiles", express.static("uploads/profiles"));
-app.use("/uploads/files", express.static("uploads/files"));
-
 app.use(cookieParser());
 app.use(express.json());
 
@@ -51,8 +46,6 @@ app.use("/api/contact", contact_route);
 app.use("/api/message", message_route);
 // Channel routes
 app.use("/api/channel", channel_route);
-// Download file route
-app.use("api/generate-signed-url", download_file_router);
 
 const server = app.listen(port, () => {
   console.log(`Server is running at the port: ${port} `);

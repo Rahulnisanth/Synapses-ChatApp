@@ -1,7 +1,8 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user_model.js";
 import jwt from "jsonwebtoken";
-import { deleteFromCloudinary, uploadToCloudinary } from "../cloudinary.js";
+// import { deleteFromCloudinary, uploadToCloudinary } from "../cloudinary.js";
+import { uploadToSupabase, deleteFromSupabase } from "../supabase-storage.js";
 
 const max_timer = 3 * 24 * 1000 * 1000;
 
@@ -144,17 +145,17 @@ export const addProfileImage = async (request, response) => {
       return response.status(400).json({ message: "File is required" });
     }
 
-    const result = await uploadToCloudinary(request.file, "profiles");
+    const result = await uploadToSupabase(request.file, "profiles");
 
     const currentUser = await User.findById(user_id);
     if (currentUser?.image && currentUser.public_id) {
-      await deleteFromCloudinary(currentUser.public_id).catch((err) => {
+      await deleteFromSupabase(currentUser.public_id).catch((err) => {
         console.warn("Old image deletion failed:", err);
       });
     }
 
-    currentUser.image = result.secure_url;
-    currentUser.public_id = result.public_id;
+    currentUser.image = result.publicUrl;
+    currentUser.public_id = result.filePath;
     await currentUser.save();
 
     return response.status(200).json({
@@ -176,14 +177,12 @@ export const deleteProfileImage = async (request, response) => {
       return response.status(404).send("User not found");
     }
 
-    // Delete from Cloudinary if public_id exists
     if (user.public_id) {
-      await deleteFromCloudinary(user.public_id).catch((err) => {
+      await deleteFromSupabase(user.public_id).catch((err) => {
         console.warn("Image deletion failed:", err);
       });
     }
 
-    // Update user document to remove image references
     user.image = null;
     user.public_id = null;
     await user.save();

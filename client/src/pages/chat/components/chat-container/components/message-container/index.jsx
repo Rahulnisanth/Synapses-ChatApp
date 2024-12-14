@@ -2,14 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import { useAppStore } from "@/store";
 import moment from "moment";
 import { api_client } from "@/lib/api-client";
-import {
-  GET_CHANNEL_MESSAGES,
-  GET_MESSAGES_ROUTE,
-  HOST,
-} from "@/utils/constants";
+import { GET_CHANNEL_MESSAGES, GET_MESSAGES_ROUTE } from "@/utils/constants";
 import { MdFolderZip, MdOutlineDownloading } from "react-icons/md";
 import { IoCloseCircle } from "react-icons/io5";
 import { Avatar } from "@/components/ui/avatar";
+import axios from "axios";
 
 const MessageContainer = () => {
   const scrollRef = useRef(null);
@@ -75,20 +72,23 @@ const MessageContainer = () => {
 
   // TODO: To fix the download error for PDFs, and other doc files
   const handleDownload = async (fileUrl) => {
-    const publicIdList = fileUrl.split("/").slice(-3); // ['files', '1731744755045', 'sgmtqhmtloekvhxwb0kd.pdf']
-    const publicId = publicIdList.join("/");
-    console.log(publicId);
     setIsDownloading(true);
     setFileDownloadProgress(0);
 
     try {
-      // Request signed URL from backend
-      const { data } = await api_client.get(`/generate-signed-url/${publicId}`);
-      const signedUrl = data.signedUrl;
-      console.log("Signed URL => ", signedUrl);
+      const isImage = checkImage(fileUrl);
 
-      // Fetch the file from the signed URL
-      const response = await api_client.get(signedUrl, {
+      let downloadUrl = fileUrl;
+      if (!isImage) {
+        const response = await axios.get(
+          `/generate-signed-url/${encodeURIComponent(fileUrl)}`
+        );
+        downloadUrl = response.data.signedUrl;
+        console.log("Generated Signed URL:", downloadUrl);
+      }
+
+      // Fetch the file from the signed URL (or public URL for images)
+      const fileResponse = await axios.get(downloadUrl, {
         responseType: "blob",
         onDownloadProgress: (event) => {
           if (event.lengthComputable) {
@@ -98,23 +98,23 @@ const MessageContainer = () => {
         },
       });
 
-      const urlBlob = window.URL.createObjectURL(response.data);
+      const urlBlob = window.URL.createObjectURL(fileResponse.data);
 
       // Create download link
       const link = document.createElement("a");
       link.href = urlBlob;
-      link.download = publicId.split("/").pop() || "download";
+      link.download = fileUrl.split("/").pop() || "download"; // Extract filename from URL
       document.body.appendChild(link);
 
-      link.click();
+      link.click(); // Trigger download
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(urlBlob);
+      window.URL.revokeObjectURL(urlBlob); // Clean up the URL blob
     } catch (error) {
       console.error("Download failed:", error);
       alert("Error occurred while downloading the file.");
     } finally {
-      setIsDownloading(false);
-      setFileDownloadProgress(0);
+      setIsDownloading(false); // Hide loading indicator
+      setFileDownloadProgress(0); // Reset progress
     }
   };
 
@@ -190,12 +190,12 @@ const MessageContainer = () => {
                 <span className="truncate max-w-[50%] sm:max-w-[65%]">
                   {message.fileUrl.split("/").slice(-1)[0]}
                 </span>
-                <span
+                <a
                   className="text-2xl sm:text-3xl cursor-pointer"
                   onClick={() => handleDownload(message.fileUrl)}
                 >
                   <MdOutlineDownloading />
-                </span>
+                </a>
               </div>
             )}
           </div>
@@ -257,12 +257,12 @@ const MessageContainer = () => {
                 <span className="truncate max-w-[50%] sm:max-w-[65%]">
                   {message.fileUrl.split("/").slice(-1)[0]}
                 </span>
-                <span
+                <a
                   className="text-2xl sm:text-3xl cursor-pointer"
                   onClick={() => handleDownload(message.fileUrl)}
                 >
                   <MdOutlineDownloading />
-                </span>
+                </a>
               </div>
             )}
           </div>

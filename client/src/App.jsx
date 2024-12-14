@@ -63,7 +63,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* TODO: Make site live after bug fix */}
-        {/* <Route
+        <Route
           path="/auth"
           element={
             <AuthRoute>
@@ -86,8 +86,8 @@ function App() {
               <Profile />
             </PrivateRoute>
           }
-        /> */}
-        <Route path="/" element={<BugFix />} />
+        />
+        <Route path="/" element={<Hero />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

@@ -1,5 +1,6 @@
 import { Message } from "../models/message_model.js";
-import { uploadToCloudinary } from "../cloudinary.js";
+// import { uploadToCloudinary } from "../cloudinary.js";
+import { uploadToSupabase } from "../supabase-storage.js";
 
 // Search contacts controller:
 export const getMessages = async (request, response, next) => {
@@ -26,22 +27,44 @@ export const getMessages = async (request, response, next) => {
 // Updated addFiles Controller with additional debugging
 export const addFiles = async (request, response, next) => {
   try {
-    console.log("File in request:", request.file);
     if (!request.file) {
-      console.log("No file found in the request");
       return response.status(400).json({ message: "File is required" });
     }
-    const date = Date.now().toString();
 
-    const result = await uploadToCloudinary(request.file, `files/${date}`);
-    console.log("File uploaded to Cloudinary:", result);
-
+    const result = await uploadToSupabase(request.file, "files");
     return response.status(200).json({
-      filePath: result.secure_url,
-      public_id: result.public_id,
+      filePath: result.publicUrl,
+      message: "File uploaded successfully",
     });
   } catch (err) {
     console.error("Error occurred in adding files:", err);
     return response.status(500).send("Internal server error!");
+  }
+};
+
+export const getSignedUrl = async (request, response, next) => {
+  try {
+    // Accessing fileUrl from route params
+    const { fileUrl } = request.params; // Changed from request.query to request.params
+    const filePath = decodeURIComponent(fileUrl); // Decode the URL to handle any encoding
+
+    console.log("File Path => ", filePath);
+
+    // Create signed URL for the file
+    const { signedURL, error } = await supabase.storage
+      .from("all-files") // Your Supabase storage bucket name
+      .createSignedUrl(filePath, 60 * 60); // Expiry time of 1 hour
+
+    if (error) {
+      return response
+        .status(500)
+        .json({ error: "Failed to generate signed URL" });
+    }
+
+    console.log("Generated Signed URL => ", signedURL);
+    return response.json({ signedUrl: signedURL });
+  } catch (err) {
+    console.error("Error generating signed URL:", err);
+    return response.status(500).json({ error: "Internal server error" });
   }
 };
