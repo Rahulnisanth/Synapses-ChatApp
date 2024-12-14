@@ -13,47 +13,58 @@ dotenv.config();
 
 const app = express();
 
-const port = process.env.PORT || 3001;
-const database_url = process.env.DATABASE_URL;
+const allowedOrigins = [
+  "https://synapses-chat-app.vercel.app",
+  "http://localhost:3000", // Add during development
+];
 
+const database_url = process.env.DATABASE_URL;
+const port = process.env.PORT || 5000;
+
+// CORS setup
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Set-Cookie"],
   })
 );
-// cors definitions
+
+// Preflight request handling
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", process.env.CORS_ORIGIN);
+  res.header("Access-Control-Allow-Origin", allowedOrigins[0]);
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+    return res.status(200).json({});
+  }
   next();
 });
-// Handle preflight requests
-app.options("*", cors());
+
+// Middleware
 app.use(cookieParser());
 app.use(express.json());
 
-// Auth routes
+// Routes
 app.use("/api/auth", auth_route);
-// Contact routes
 app.use("/api/contact", contact_route);
-// Message routes
 app.use("/api/message", message_route);
-// Channel routes
 app.use("/api/channel", channel_route);
 
+// Server and Database
 const server = app.listen(port, () => {
-  console.log(`Server is running at the port: ${port} `);
+  console.log(`Server is running at the port: ${port}`);
 });
 
 setUpSocket(server);
 
 mongoose
-  .connect(database_url)
+  .connect(database_url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Database connection successful!"))
   .catch((err) => console.error("Database connection error:", err));

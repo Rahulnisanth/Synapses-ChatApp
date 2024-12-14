@@ -21,16 +21,25 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const validate_signup = () => {
-    if (!email.length) {
+    if (!email.trim().length) {
       toast.error("Email is required.");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
       return false;
     }
     if (!password) {
       toast.error("Password is required.");
       return false;
     }
+    if (password.length < 8) {
+      toast.error("Password should be at least 8 characters long.");
+      return false;
+    }
     if (password !== confirmPassword) {
-      toast.error("Password and confirm password should be same.");
+      toast.error("Password and confirm password should be the same.");
       return false;
     }
     return true;
@@ -70,8 +79,23 @@ const Auth = () => {
 
   const handle_signup = async () => {
     if (validate_signup()) {
-      const response = await api_client.post(SIGNUP_ROUTE, { email, password });
-      setUserInfo(response.data.user);
+      try {
+        const response = await api_client.post(SIGNUP_ROUTE, {
+          email: email.trim(),
+          password,
+        });
+        setUserInfo(response.data.user);
+        toast.success("Signup successful! Welcome.");
+      } catch (error) {
+        console.error("Signup error:", error.response || error.message);
+        if (error.response && error.response.data) {
+          toast.error(
+            error.response.data.message || "Signup failed. Please try again."
+          );
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
+      }
     }
   };
 
