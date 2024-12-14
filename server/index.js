@@ -13,17 +13,6 @@ import channel_route from "./routes/channel_routes.js";
 dotenv.config();
 
 const app = express();
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://synapses-chat-app.vercel.app"
-  ); // Replace with your frontend's URL
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Specify allowed methods
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Specify allowed headers
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // If you need to send cookies
-  next();
-});
-
 const database_url = process.env.DATABASE_URL;
 const port = process.env.PORT || 5000;
 
@@ -31,6 +20,8 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "https://synapses-chat-app.vercel.app",
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 );
