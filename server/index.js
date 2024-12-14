@@ -17,19 +17,33 @@ const app = express();
 const database_url = process.env.DATABASE_URL;
 const port = process.env.PORT || 5000;
 
-// Comprehensive CORS configuration
-const corsOptions = {
-  origin: ["https://synapses-chat-app.vercel.app", "http://localhost:3000"],
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
-};
+// CORS middleware from StackOverflow solution
+app.use(function (req, res, next) {
+  // Enabling CORS
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE,PATCH");
+  res.header(
+    "Access-Control-Allow-Headers", 
+    "Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization"
+  );
+  
+  // Intercept OPTIONS method
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
 
-// Apply CORS middleware
-app.use(cors(corsOptions));
-
-// Handle preflight requests
-app.options("*", cors(corsOptions));
+// Additional CORS configuration
+app.use(cors({
+  origin: [
+    "https://synapses-chat-app.vercel.app", 
+    "http://localhost:3000",
+    "https://localhost:3000"
+  ],
+  credentials: true
+}));
 
 // Middleware
 app.use(cookieParser());
