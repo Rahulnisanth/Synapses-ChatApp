@@ -17,33 +17,13 @@ const app = express();
 const database_url = process.env.DATABASE_URL;
 const port = process.env.PORT || 5000;
 
-// CORS middleware from StackOverflow solution
-app.use(function (req, res, next) {
-  // Enabling CORS
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE,PATCH");
-  res.header(
-    "Access-Control-Allow-Headers", 
-    "Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization"
-  );
-  
-  // Intercept OPTIONS method
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
-  next();
-});
-
 // Additional CORS configuration
-app.use(cors({
-  origin: [
-    "https://synapses-chat-app.vercel.app", 
-    "http://localhost:3000",
-    "https://localhost:3000"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "https://synapses-chat-app.vercel.app",
+    credentials: true,
+  })
+);
 
 // Middleware
 app.use(cookieParser());

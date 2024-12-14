@@ -1,7 +1,6 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user_model.js";
 import jwt from "jsonwebtoken";
-// import { deleteFromCloudinary, uploadToCloudinary } from "../cloudinary.js";
 import { uploadToSupabase, deleteFromSupabase } from "../supabase-storage.js";
 
 const max_timer = 3 * 24 * 1000 * 1000;
@@ -137,6 +136,7 @@ export const updateUserInfo = async (request, response) => {
   }
 };
 
+// Add profile image controller
 export const addProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;
@@ -168,6 +168,7 @@ export const addProfileImage = async (request, response) => {
   }
 };
 
+// Delete profile image controller
 export const deleteProfileImage = async (request, response) => {
   try {
     const user_id = request.user_id;

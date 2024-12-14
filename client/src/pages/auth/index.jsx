@@ -85,7 +85,6 @@ const Auth = () => {
       } catch (error) {
         console.error("Login error:", error.response || error.message);
 
-        // Handle API errors
         if (error.response && error.response.data) {
           toast.error(
             error.response.data.message || "Login failed. Please try again."
@@ -100,10 +99,16 @@ const Auth = () => {
   const handle_signup = async () => {
     if (validate_signup()) {
       try {
-        const response = await api_client.post(SIGNUP_ROUTE, {
-          email: email.trim(),
-          password,
-        });
+        const response = await api_client.post(
+          SIGNUP_ROUTE,
+          {
+            email: email.trim(),
+            password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
         setUserInfo(response.data.user);
         toast.success("Signup successful! Welcome.");
       } catch (error) {

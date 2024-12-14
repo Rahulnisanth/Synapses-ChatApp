@@ -42,6 +42,7 @@ export const getUserChannels = async (request, response, next) => {
   }
 };
 
+// Get all messages from single channel controller
 export const getChannelMessages = async (request, response, next) => {
   try {
     const { channelId } = request.params;

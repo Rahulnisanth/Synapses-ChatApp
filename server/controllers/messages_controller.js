@@ -1,5 +1,4 @@
 import { Message } from "../models/message_model.js";
-// import { uploadToCloudinary } from "../cloudinary.js";
 import { uploadToSupabase } from "../supabase-storage.js";
 
 // Search contacts controller:
@@ -42,18 +41,17 @@ export const addFiles = async (request, response, next) => {
   }
 };
 
+// Get the signed url for downloading the hard files
 export const getSignedUrl = async (request, response, next) => {
   try {
-    // Accessing fileUrl from route params
-    const { fileUrl } = request.params; // Changed from request.query to request.params
-    const filePath = decodeURIComponent(fileUrl); // Decode the URL to handle any encoding
+    const { fileUrl } = request.params;
+    const filePath = decodeURIComponent(fileUrl);
 
     console.log("File Path => ", filePath);
 
-    // Create signed URL for the file
     const { signedURL, error } = await supabase.storage
-      .from("all-files") // Your Supabase storage bucket name
-      .createSignedUrl(filePath, 60 * 60); // Expiry time of 1 hour
+      .from("all-files")
+      .createSignedUrl(filePath, 60 * 60);
 
     if (error) {
       return response
